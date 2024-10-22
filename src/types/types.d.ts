@@ -1,7 +1,7 @@
 import {GameState, PlayerColorBank} from '@components/app/consts.ts';
 declare global {
     export interface Player {
-        id: string;
+        id: number;
         name: string;
         color: PlayerColor;
     }
@@ -10,7 +10,7 @@ declare global {
         name?: string;
         id?: string;
         content: string;
-        openerCategory?: 'random'| 'mystery' |'funny';
+        openerCategory: 'random'| 'mystery' |'funny';
         starter?: string;
         state: GameState;
         players: Player[];

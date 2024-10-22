@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 import {PlayerColorBank} from './src/components/app/consts';
+import daisyui from 'daisyui';
 
 export default {
     content: [
@@ -26,6 +27,6 @@ export default {
     ],
     theme: {
     },
-    plugins: [],
+    plugins: [daisyui],
 };
 

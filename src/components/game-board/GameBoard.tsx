@@ -1,38 +1,24 @@
-import * as React from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import SidePanel from './side-panel/SidePanel';
 import StoryBoard from './story-board/StoryBoard';
 import {
     GameState,
     MAX_TURNS_PER_PLAYER,
-    PlayerColorBank,
     TURN_TIME,
 } from '../app/consts';
-import {useCallback, useEffect, useState} from 'react';
 import openings from '@assets/openings.json';
 import {StartGameDialog} from '@components/app/game-board/start-game-dialog/StartGameDialog';
-import {GameProvider} from '@contexts/game.context.tsx';
+import { useGame } from '@contexts/game.context';
 
 function GameBoard({ className }: ChildProps): React.JSX.Element{
+    const { config : { players, openerCategory } } = useGame();
     const navigate = useNavigate();
 
-    // TODO: Change this to a dynamic value once we have a players list logic
-    const players = [
-        {
-            id: 'tom',
-            name: 'Tom',
-            color: PlayerColorBank.player1
-        },
-        {
-            id: 'ofer',
-            name: 'Ofer',
-            color: PlayerColorBank.player2
-        }
-    ];
     const [game, setGame] = useState<Game>({
         content: '',
-        openerCategory: 'random',
-        players: players,
+        openerCategory,
+        players,
         activePlayer: null,
         nextPlayer: null,
         state: GameState.InGame,
@@ -41,7 +27,7 @@ function GameBoard({ className }: ChildProps): React.JSX.Element{
     });
     const [showGameDialog, setShowGameDialog] = useState(true);
     const getOpener: (game: Game)=> string = useCallback((game:Game) => {
-        const category = game.openerCategory || 'random';
+        const category = game.openerCategory;
         const selectedIndex = Math.floor(Math.random() * openings[category].length);
 
         return openings[category][selectedIndex];
@@ -84,24 +70,23 @@ function GameBoard({ className }: ChildProps): React.JSX.Element{
         }));
     }, [showGameDialog, getOpener]);
 
-    return (<div className= {className}>
-        <GameProvider>
-        <SidePanel className='flex basis-1/3 flex-col justify-center'
-                   game={game}
-                   endGame={setEndGame}
-                   updatePlayerTurn={updatePlayerTurn}>
-        </SidePanel>
-        <StoryBoard className='flex basis-2/3 border-2
-            max-2xl board-container flex-col p-6
-             relative justify-center align-middle items-center'
-                    content={game.content}
-                    activePlayer={game?.activePlayer}
-                    updatePlayerTurn={updatePlayerTurn}>
-        </StoryBoard>
-        <StartGameDialog
-            startingPlayerName={game?.activePlayer?.name || ''}/>
-        </GameProvider>
-    </div>);
+    return (
+        <div className= {className}>
+            <SidePanel className='flex basis-1/3 flex-col justify-center'
+                       game={game}
+                       endGame={setEndGame}
+                       updatePlayerTurn={updatePlayerTurn}>
+            </SidePanel>
+            <StoryBoard className='flex basis-2/3 border-2
+                max-2xl board-container flex-col p-6
+                 relative justify-center align-middle items-center'
+                        content={game.content}
+                        activePlayer={game?.activePlayer}
+                        updatePlayerTurn={updatePlayerTurn}>
+            </StoryBoard>
+            <StartGameDialog startingPlayerName={game?.activePlayer?.name || ''}/>
+        </div>
+    );
 }
 
 export default GameBoard;
