@@ -1,4 +1,12 @@
-import React, {createContext, Dispatch, ReactNode, SetStateAction, useContext, useState} from 'react';
+import React, {
+    createContext,
+    useCallback,
+    useEffect,
+    Dispatch,
+    ReactNode,
+    SetStateAction,
+    useContext,
+    useState} from 'react';
 import {PlayerColorBank} from '@components/app/consts';
 export type StoryEntry  = { text: string, user: string, turn: number};
 
@@ -48,25 +56,18 @@ export const GameProvider: React.FC<GameProps> = ({ children }) => {
          acc.concat(currentValue.text),'')}`);
     }, [story]);
 
-    return (<GameContext.Provider value={
-        {
-          isTriggered,
-          setIsTriggered,
-          story,
-          setStory,
-          addEntry,
-          addOpener,
-          content,
-        }}>
-        {children}
-    </GameContext.Provider>);
-    const value = {
-        isTriggered,
-        setIsTriggered,
-        config,
-        setConfig
-    };
 
+    const value =  {
+        isTriggered,
+        story,
+        addEntry,
+        addOpener,
+        content,
+        config,
+        setStory,
+        setIsTriggered,
+        setConfig
+    }
     return (
         <GameContext.Provider value={value}>
             {children}

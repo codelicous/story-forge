@@ -7,10 +7,12 @@ import {
     MAX_TURNS_PER_PLAYER,
     TURN_TIME,
 } from '../app/consts';
-import openings from '@assets/openings.json';
 import {StartGameDialog} from '@components/app/game-board/start-game-dialog/StartGameDialog';
 import { useGame } from '@contexts/game.context';
-function GameBoard({className}: ChildProps): React.JSX.Element {const { config : { players, openerCategory } } = useGame();
+
+function GameBoard({className}: ChildProps): React.JSX.Element {
+    const { config : { players, openerCategory } } = useGame();
+
     const navigate = useNavigate();
 
     const [game, setGame] = useState<Game>({
@@ -23,13 +25,8 @@ function GameBoard({className}: ChildProps): React.JSX.Element {const { config :
         currentPlayerTime: TURN_TIME,
         totalTurns: players.length * MAX_TURNS_PER_PLAYER
     });
-    const [showGameDialog, setShowGameDialog] = useState(true);
-    const getOpener: (game: Game)=> string = useCallback((game:Game) => {
-        const category = game.openerCategory;
-        const selectedIndex = Math.floor(Math.random() * openings[category].length);
+    const [showGameDialog] = useState(true);
 
-        return openings[category][selectedIndex];
-    },[]);
 
     const setEndGame = useCallback(() => {
         // TODO: Add logic to end the game
@@ -40,17 +37,19 @@ function GameBoard({className}: ChildProps): React.JSX.Element {const { config :
 
         navigate('/game-over');
     }, [navigate, setGame]);
-    const updatePlayerInsideGameObject = useCallback((prevGame: Game) => {
-        const currentPlayer = prevGame.activePlayer;
-        const currentPlayerIndex = prevGame.players.indexOf(currentPlayer!);
-        const nextPlayerIndex = (currentPlayerIndex + 1) % prevGame.players.length;
-        return {
-            ...prevGame,
-            totalTurns: prevGame.totalTurns - 1,
-            activePlayer: prevGame.players[nextPlayerIndex],
-            nextPlayer: prevGame.players[(nextPlayerIndex + 1) % prevGame.players.length],
 
-        };
+const updatePlayerInsideGameObject = useCallback((prevGame: Game) => {
+    const currentPlayer = prevGame.activePlayer;
+    const currentPlayerIndex = prevGame.players.indexOf(currentPlayer!);
+    const nextPlayerIndex = (currentPlayerIndex + 1) % prevGame.players.length;
+    return {
+        ...prevGame,
+        totalTurns: prevGame.totalTurns - 1,
+        activePlayer: prevGame.players[nextPlayerIndex],
+        nextPlayer: prevGame.players[(nextPlayerIndex + 1) % prevGame.players.length],
+
+    };
+},[]);
 
     const updatePlayerTurn = useCallback(() => {
         setGame(updatePlayerInsideGameObject);
@@ -78,8 +77,7 @@ function GameBoard({className}: ChildProps): React.JSX.Element {const { config :
             <StoryBoard className='flex basis-2/3 border-2
                 max-2xl board-container flex-col p-6
                  relative justify-center align-middle items-center'
-                        content={game.content}
-                        activePlayer={game?.activePlayer}
+                        game={game}
                         updatePlayerTurn={updatePlayerTurn}>
             </StoryBoard>
             <StartGameDialog startingPlayerName={game?.activePlayer?.name || ''}/>
