@@ -27,7 +27,6 @@ function GameBoard({className}: ChildProps): React.JSX.Element {
     });
     const [showGameDialog] = useState(true);
 
-
     const setEndGame = useCallback(() => {
         // TODO: Add logic to end the game
         setGame((prevGame: Game) => ({

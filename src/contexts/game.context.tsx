@@ -56,7 +56,6 @@ export const GameProvider: React.FC<GameProps> = ({ children }) => {
          acc.concat(currentValue.text),'')}`);
     }, [story]);
 
-
     const value =  {
         isTriggered,
         story,
@@ -67,7 +66,7 @@ export const GameProvider: React.FC<GameProps> = ({ children }) => {
         setStory,
         setIsTriggered,
         setConfig
-    }
+    };
     return (
         <GameContext.Provider value={value}>
             {children}
