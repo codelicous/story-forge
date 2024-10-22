@@ -1,13 +1,18 @@
-import React, {createContext, useCallback, useContext, useEffect, useState} from 'react';
+import React, {createContext, Dispatch, ReactNode, SetStateAction, useContext, useState} from 'react';
+import {PlayerColorBank} from '@components/app/consts';
 export type StoryEntry  = { text: string, user: string, turn: number};
+
 export type Story = {
     entries: StoryEntry[];
     opener: string;
 }
+type GameConfig = Pick<Game, 'players' | 'openerCategory'>;
 
 type GameContextProps = {
     isTriggered: boolean;
-    setIsTriggered: (isTriggered: boolean) => void;
+    setIsTriggered: Dispatch<SetStateAction<boolean>>;
+    config: GameConfig;
+    setConfig: Dispatch<SetStateAction<GameConfig>>;
     story: Story;
     setStory: (story: Story) => void;
     addEntry: (storyEntry: StoryEntry) => void;
@@ -16,7 +21,8 @@ type GameContextProps = {
 }
 
 const GameContext = createContext<GameContextProps| null>(null);
-type GameProps = { children?: React.ReactNode };
+
+type GameProps = { children?: ReactNode };
 
 export const GameProvider: React.FC<GameProps> = ({ children }) => {
     const [isTriggered, setIsTriggered] = useState(false);
@@ -29,6 +35,13 @@ export const GameProvider: React.FC<GameProps> = ({ children }) => {
     const addOpener  = useCallback((opener: string)=>{
         setStory({...story, opener});
     },[story]);
+    const [config, setConfig] = useState<GameConfig>({
+        openerCategory: 'random',
+        players: [
+            {id: 1, name: 'Tom', color: PlayerColorBank.player1},
+            {id: 2, name: 'Ofer', color: PlayerColorBank.player2},
+        ]
+    });
 
     useEffect(() => {
         setContent(  `${story.opener} ${story.entries.reduce<string>((acc: string, currentValue: StoryEntry)=>
@@ -47,6 +60,18 @@ export const GameProvider: React.FC<GameProps> = ({ children }) => {
         }}>
         {children}
     </GameContext.Provider>);
+    const value = {
+        isTriggered,
+        setIsTriggered,
+        config,
+        setConfig
+    };
+
+    return (
+        <GameContext.Provider value={value}>
+            {children}
+        </GameContext.Provider>
+    );
 };
 export const useGame = () => {
     const context = useContext(GameContext);

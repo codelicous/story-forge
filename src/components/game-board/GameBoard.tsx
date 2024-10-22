@@ -1,43 +1,35 @@
-import * as React from 'react';
-import {useNavigate} from 'react-router-dom';
+import React, {useCallback, useEffect, useState} from 'react';
+import { useNavigate } from 'react-router-dom';
 import SidePanel from './side-panel/SidePanel';
 import StoryBoard from './story-board/StoryBoard';
 import {
     GameState,
     MAX_TURNS_PER_PLAYER,
-    PlayerColorBank,
     TURN_TIME,
 } from '../app/consts';
-import {useCallback, useEffect, useState} from 'react';
+import openings from '@assets/openings.json';
 import {StartGameDialog} from '@components/app/game-board/start-game-dialog/StartGameDialog';
-import {GameProvider } from '@contexts/game.context.tsx';
-function GameBoard({className}: ChildProps): React.JSX.Element {
+import { useGame } from '@contexts/game.context';
+function GameBoard({className}: ChildProps): React.JSX.Element {const { config : { players, openerCategory } } = useGame();
     const navigate = useNavigate();
 
-    // TODO: Change this to a dynamic value once we have a players list logic
-    const players = [
-        {
-            id: 'tom',
-            name: 'Tom',
-            color: PlayerColorBank.player1
-        },
-        {
-            id: 'ofer',
-            name: 'Ofer',
-            color: PlayerColorBank.player2
-        }
-    ];
     const [game, setGame] = useState<Game>({
         content: '',
-        openerCategory: 'random',
-        players: players,
+        openerCategory,
+        players,
         activePlayer: null,
         nextPlayer: null,
         state: GameState.InGame,
         currentPlayerTime: TURN_TIME,
         totalTurns: players.length * MAX_TURNS_PER_PLAYER
     });
-    const [showGameDialog] = useState(true);
+    const [showGameDialog, setShowGameDialog] = useState(true);
+    const getOpener: (game: Game)=> string = useCallback((game:Game) => {
+        const category = game.openerCategory;
+        const selectedIndex = Math.floor(Math.random() * openings[category].length);
+
+        return openings[category][selectedIndex];
+    },[]);
 
     const setEndGame = useCallback(() => {
         // TODO: Add logic to end the game
@@ -47,8 +39,7 @@ function GameBoard({className}: ChildProps): React.JSX.Element {
         }));
 
         navigate('/game-over');
-    }, [navigate]);
-
+    }, [navigate, setGame]);
     const updatePlayerInsideGameObject = useCallback((prevGame: Game) => {
         const currentPlayer = prevGame.activePlayer;
         const currentPlayerIndex = prevGame.players.indexOf(currentPlayer!);
@@ -60,7 +51,7 @@ function GameBoard({className}: ChildProps): React.JSX.Element {
             nextPlayer: prevGame.players[(nextPlayerIndex + 1) % prevGame.players.length],
 
         };
-    },[]);
+
     const updatePlayerTurn = useCallback(() => {
         setGame(updatePlayerInsideGameObject);
     }, [updatePlayerInsideGameObject]);
@@ -77,23 +68,23 @@ function GameBoard({className}: ChildProps): React.JSX.Element {
 
     }, [showGameDialog]);
 
-    return (<div className={className}>
-    <GameProvider>
+    return (
+        <div className= {className}>
             <SidePanel className='flex basis-1/3 flex-col justify-center'
                        game={game}
                        endGame={setEndGame}
                        updatePlayerTurn={updatePlayerTurn}>
             </SidePanel>
             <StoryBoard className='flex basis-2/3 border-2
-            max-2xl board-container flex-col p-6
-             relative justify-center align-middle items-center'
-                        game={game}
+                max-2xl board-container flex-col p-6
+                 relative justify-center align-middle items-center'
+                        content={game.content}
+                        activePlayer={game?.activePlayer}
                         updatePlayerTurn={updatePlayerTurn}>
             </StoryBoard>
-            <StartGameDialog
-                startingPlayerName={game?.activePlayer?.name || ''}/>
-    </GameProvider>
-    </div>);
+            <StartGameDialog startingPlayerName={game?.activePlayer?.name || ''}/>
+        </div>
+    );
 }
 
 export default GameBoard;
