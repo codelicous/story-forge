@@ -37,7 +37,7 @@ function GameBoard({className}: ChildProps): React.JSX.Element {
         currentPlayerTime: TURN_TIME,
         totalTurns: players.length * MAX_TURNS_PER_PLAYER
     });
-    const [showGameDialog, setShowGameDialog] = useState(true);
+    const [showGameDialog] = useState(true);
 
     const setEndGame = useCallback(() => {
         // TODO: Add logic to end the game
@@ -62,7 +62,6 @@ function GameBoard({className}: ChildProps): React.JSX.Element {
         };
     },[]);
     const updatePlayerTurn = useCallback(() => {
-        setShowGameDialog(false);
         setGame(updatePlayerInsideGameObject);
     }, [updatePlayerInsideGameObject]);
 

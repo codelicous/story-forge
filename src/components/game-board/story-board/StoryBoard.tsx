@@ -52,7 +52,7 @@ export default function StoryBoard({className,  updatePlayerTurn,game}: StoryBoa
     return <div className={className}>
         <div className='flex flex-col h-3/4 w-full items-center'>
             <div className='text-container w-full border-2 h-3/4 flex flex-1 text-xl p-5'>
-                <div className='ho ken'>{content}</div>
+                <div>{content}</div>
                 <input
                     ref={inputRef}
                     autoFocus={true}
