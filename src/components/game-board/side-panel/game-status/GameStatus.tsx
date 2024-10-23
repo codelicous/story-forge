@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import { useTimer } from '@contexts/timer.context';
 import ProgressBar from '@components/ProgressBar/ProgressBar';
-import { useGame } from '@contexts/game.context.tsx';
 
 export interface GameStatusProps extends ChildProps, Game {
     updatePlayerTurn: () => void,
@@ -16,15 +15,9 @@ export default function GameStatus({
                                        totalTurns,
                                        endGame
                                    }: GameStatusProps): React.JSX.Element {
-    const { timer, startCountdown, stopCountdown } = useTimer();
+    const { timer, stopCountdown } = useTimer();
 
     const isTimerEnd = useMemo(() => timer === 0, [timer]);
-    const { isTriggered} = useGame();
-    useEffect(() => {
-        if (activePlayer && isTriggered ) {
-            startCountdown();
-        }
-    }, [activePlayer,isTriggered, startCountdown]);
 
     useEffect(() => {
         if (isTimerEnd) {

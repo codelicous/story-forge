@@ -9,11 +9,13 @@ import {
 } from '../app/consts';
 import {StartGameDialog} from '@components/app/game-board/start-game-dialog/StartGameDialog';
 import { useGame } from '@contexts/game.context';
+import { useTimer } from '@contexts/timer.context.tsx';
 
 function GameBoard({className}: ChildProps): React.JSX.Element {
     const { config : { players, openerCategory } } = useGame();
 
     const navigate = useNavigate();
+    const { startCountdown } = useTimer();
 
     const [game, setGame] = useState<Game>({
         content: '',
@@ -25,7 +27,12 @@ function GameBoard({className}: ChildProps): React.JSX.Element {
         currentPlayerTime: TURN_TIME,
         totalTurns: players.length * MAX_TURNS_PER_PLAYER
     });
-    const [showGameDialog] = useState(true);
+    const [showGameDialog, setShowGameDialog] = useState(true);
+
+    const okDialogAction = useCallback(() => {
+        setShowGameDialog(false);
+        startCountdown();
+    },[startCountdown, setShowGameDialog]);
 
     const setEndGame = useCallback(() => {
         // TODO: Add logic to end the game
@@ -79,7 +86,10 @@ const updatePlayerInsideGameObject = useCallback((prevGame: Game) => {
                         game={game}
                         updatePlayerTurn={updatePlayerTurn}>
             </StoryBoard>
-            <StartGameDialog startingPlayerName={game?.activePlayer?.name || ''}/>
+            <StartGameDialog
+                triggerStartGame={okDialogAction}
+                isOpen={showGameDialog}
+                startingPlayerName={game?.activePlayer?.name || ''}/>
         </div>
     );
 }
