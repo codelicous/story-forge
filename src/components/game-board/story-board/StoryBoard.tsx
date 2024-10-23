@@ -1,33 +1,41 @@
-import React, {ChangeEvent, useEffect, useMemo, useRef, useState} from 'react';
+import React, {ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {useGame} from '@contexts/game.context.tsx';
+import openings from '@assets/openings.json';
 
 export type StoryBoardProps = ChildProps &
-    { content: string,
+    {
       updatePlayerTurn: () => void,
-      activePlayer: Player | null
+        game: Game,
     };
 
-export default function StoryBoard({className, content, updatePlayerTurn, activePlayer}: StoryBoardProps): React.JSX.Element {
-    const [submitted, setSubmitted] = useState<string>('');
+export default function StoryBoard({className,  updatePlayerTurn,game}: StoryBoardProps): React.JSX.Element {
+
     const [activeText, setActiveText] = useState<string>('');
     const inputRef = useRef<HTMLInputElement>(null);
-
+    const { addEntry, addOpener, content, story} = useGame();
     document.onclick = () =>  inputRef && inputRef.current?.focus();
 
     useEffect(() => {
-        setSubmitted(content);
-    }, [content]);
+        if(!story.opener) {
+        const category = game.openerCategory || 'random';
+        const selectedIndex = Math.floor(Math.random() * openings[category].length);
+        addOpener(openings[category][selectedIndex]);
+        }
+    }, [addOpener, game.openerCategory, story.opener]);
 
-    const submitText = () => {
+    const submitText = useCallback(() => {
         if (!activeText) {
             return;
         }
-        const aggregatedText = `${submitted} ${activeText.trim()}`;
-        setActiveText('');
-        setSubmitted(aggregatedText);
+
+        addEntry({
+            turn: game.totalTurns, user: game.activePlayer?.name || '', text: activeText.trim()
+        });
         inputRef?.current?.focus();
+        setActiveText('');
         updatePlayerTurn();
 
-    };
+    }, [activeText, addEntry,game?.activePlayer?.name, game.totalTurns, updatePlayerTurn]);
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter' && !inputDisabled) {
@@ -44,7 +52,7 @@ export default function StoryBoard({className, content, updatePlayerTurn, active
     return <div className={className}>
         <div className='flex flex-col h-3/4 w-full items-center'>
             <div className='text-container w-full border-2 h-3/4 flex flex-1 text-xl p-5'>
-                <div>{submitted}</div>
+                <div>{content}</div>
                 <input
                     ref={inputRef}
                     autoFocus={true}
@@ -54,8 +62,8 @@ export default function StoryBoard({className, content, updatePlayerTurn, active
                     onChange={(e: ChangeEvent<HTMLInputElement>) => setActiveText(e.target.value)}
                     className={`ml-2 bg-transparent h-7 w-fit text-xl
                     border-b-2
-                     border-b-${activePlayer?.color}
-                     outline-0 text-${activePlayer?.color}`}
+                     border-b-${game.activePlayer?.color}
+                     outline-0 text-${game.activePlayer?.color}`}
                 ></input>
             </div>
             <button disabled={inputDisabled}

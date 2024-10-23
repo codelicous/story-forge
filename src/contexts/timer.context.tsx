@@ -29,6 +29,7 @@ export const formatTime = (milliseconds: number): string => {
 
 export const TimerProvider: React.FC<TimerProviderProps> = ({ children, initialTime }) => {
     const [timer, setTimer] = useState(initialTime);
+
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     const stopCountdown = useCallback(() => {
