@@ -59,7 +59,8 @@ const updatePlayerInsideGameObject = useCallback((prevGame: Game) => {
 
     const updatePlayerTurn = useCallback(() => {
         setGame(updatePlayerInsideGameObject);
-    }, [updatePlayerInsideGameObject]);
+        startCountdown();
+    }, [updatePlayerInsideGameObject, startCountdown]);
 
     // useEffect to initialize the game
     useEffect(() => {
