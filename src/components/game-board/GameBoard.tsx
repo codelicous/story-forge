@@ -25,7 +25,7 @@ function GameBoard({ className }: ChildProps): React.JSX.Element{
         currentPlayerTime: TURN_TIME,
         totalTurns: players.length * MAX_TURNS_PER_PLAYER
     });
-    const [showGameDialog, setShowGameDialog] = useState(true);
+
     const getOpener: (game: Game)=> string = useCallback((game:Game) => {
         const category = game.openerCategory;
         const selectedIndex = Math.floor(Math.random() * openings[category].length);
@@ -44,7 +44,6 @@ function GameBoard({ className }: ChildProps): React.JSX.Element{
     }, [navigate, setGame]);
 
     const updatePlayerTurn =  useCallback(()=>{
-        setShowGameDialog(false);
         setGame((prevGame: Game) => {
             const currentPlayer = prevGame.activePlayer;
             const currentPlayerIndex = prevGame.players.indexOf(currentPlayer!);
@@ -61,14 +60,13 @@ function GameBoard({ className }: ChildProps): React.JSX.Element{
 
     // useEffect to initialize the game
     useEffect(() => {
-
         setGame((prevGame: Game) => ({
             ...prevGame,
             content: prevGame.starter || getOpener(prevGame),
             activePlayer: prevGame.players[0],
             nextPlayer: prevGame.players[1]
         }));
-    }, [showGameDialog, getOpener]);
+    }, [getOpener]);
 
     return (
         <div className= {className}>
