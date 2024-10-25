@@ -81,7 +81,7 @@ const updatePlayerInsideGameObject = useCallback((prevGame: Game) => {
                        endGame={setEndGame}
                        updatePlayerTurn={updatePlayerTurn}>
             </SidePanel>
-            <StoryBoard className='flex basis-2/3 border-2
+            <StoryBoard className='flex basis-2/3
                 max-2xl board-container flex-col p-6
                  relative justify-center align-middle items-center'
                         game={game}

@@ -36,7 +36,7 @@ export default function GameStatus({
     const percentage = useMemo(() => (timer / currentPlayerTime) * 100, [timer, currentPlayerTime]);
 
     return (
-        <div className='flex flex-col p-5 border-2'>
+        <div className='flex flex-col p-5'>
             <div className='font-bold'><span
                 className={ `text-${ activePlayer?.color }` }>{ activePlayer?.name }'s</span> Turn
             </div>

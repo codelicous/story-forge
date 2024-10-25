@@ -4,22 +4,22 @@ import openings from '@assets/openings.json';
 
 export type StoryBoardProps = ChildProps &
     {
-      updatePlayerTurn: () => void,
+        updatePlayerTurn: () => void,
         game: Game,
     };
 
-export default function StoryBoard({className,  updatePlayerTurn,game}: StoryBoardProps): React.JSX.Element {
+export default function StoryBoard({className, updatePlayerTurn, game}: StoryBoardProps): React.JSX.Element {
 
     const [activeText, setActiveText] = useState<string>('');
     const inputRef = useRef<HTMLInputElement>(null);
-    const { addEntry, addOpener, content, story} = useGame();
-    document.onclick = () =>  inputRef && inputRef.current?.focus();
+    const {addEntry, addOpener, content, story} = useGame();
+    document.onclick = () => inputRef && inputRef.current?.focus();
 
     useEffect(() => {
-        if(!story.opener) {
-        const category = game.openerCategory || 'random';
-        const selectedIndex = Math.floor(Math.random() * openings[category].length);
-        addOpener(openings[category][selectedIndex]);
+        if (!story.opener) {
+            const category = game.openerCategory || 'random';
+            const selectedIndex = Math.floor(Math.random() * openings[category].length);
+            addOpener(openings[category][selectedIndex]);
         }
     }, [addOpener, game.openerCategory, story.opener]);
 
@@ -35,7 +35,7 @@ export default function StoryBoard({className,  updatePlayerTurn,game}: StoryBoa
         setActiveText('');
         updatePlayerTurn();
 
-    }, [activeText, addEntry,game?.activePlayer?.name, game.totalTurns, updatePlayerTurn]);
+    }, [activeText, addEntry, game?.activePlayer?.name, game.totalTurns, updatePlayerTurn]);
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter' && !inputDisabled) {
@@ -45,31 +45,34 @@ export default function StoryBoard({className,  updatePlayerTurn,game}: StoryBoa
     };
 
     const inputDisabled = useMemo(() => {
-        const threeWordsPattern:RegExp = /^\S+ \S+ \S+$/;
+        const threeWordsPattern: RegExp = /^\S+ \S+ \S+$/;
         return !threeWordsPattern.test(activeText);
     }, [activeText]);
 
     return <div className={className}>
         <div className='flex flex-col h-3/4 w-full items-center'>
-            <div className='text-container w-full border-2 h-3/4 flex flex-1 text-xl p-5'>
-                <div>{content}</div>
-                <input
-                    ref={inputRef}
-                    autoFocus={true}
-                    type='text'
-                    value={activeText}
-                    onKeyDown={handleKeyDown}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => setActiveText(e.target.value)}
-                    className={`ml-2 bg-transparent h-7 w-fit text-xl
+            <div className='text-container w-full h-3/4 flex flex-1 text-xl p-5'>
+                <div>
+                    {content}
+                    <input
+                        ref={inputRef}
+                        autoFocus={true}
+                        type='text'
+                        value={activeText}
+                        onKeyDown={handleKeyDown}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setActiveText(e.target.value)}
+                        className={`ml-2 bg-transparent h-7 w-fit text-xl
                     border-b-2
                      border-b-${game.activePlayer?.color}
                      outline-0 text-${game.activePlayer?.color}`}
-                ></input>
+                    ></input>
+                </div>
             </div>
             <button disabled={inputDisabled}
                     onClick={submitText}
                     className='w-56 mt-6 disabled:bg-gray-400
-             disabled:cursor-not-allowed disabled:opacity-50'>Submit my Words</button>
+             disabled:cursor-not-allowed disabled:opacity-50'>Submit my Words
+            </button>
         </div>
     </div>;
 }
