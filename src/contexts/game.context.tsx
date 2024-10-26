@@ -8,8 +8,8 @@ import React, {
     useContext,
     useState
 } from 'react';
-import {useRouteContext} from '@contexts/router.context.tsx';
 import {quickPlayPlayers} from '@components/app/consts.ts';
+import {useLocation} from 'react-router-dom';
 
 export type StoryEntry = { text: string, user: string, turn: number };
 
@@ -37,7 +37,7 @@ type GameProps = { children?: ReactNode };
 
 export const GameProvider: React.FC<GameProps> = ({children}) => {
     const [isTriggered, setIsTriggered] = useState(false);
-    const {location} = useRouteContext();
+    const location = useLocation();
     const [story, setStory] = useState<Story>({entries: [], opener: ''});
     const [content, setContent] = useState('');
     const addEntry = useCallback((storyEntry: StoryEntry) => {
