@@ -1,7 +1,7 @@
 import React, {useCallback} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useGame} from '@contexts/game.context';
-import {MAX_PLAYERS, PlayerColorBank} from '@components/app/consts';
+import {MAX_PLAYERS, PlayerColorBank, quickPlayPlayers} from '@components/app/consts';
 import openings from '@assets/openings.json';
 
 const categories = Object.keys(openings);
@@ -24,15 +24,8 @@ export const Welcome = (): React.JSX.Element => {
     }, [players, navigate]);
 
     const onQuickPlayClick = useCallback(()=>{
-        setConfig((prevState) =>(
-            {...prevState,
-                players:[
-                    {id:1 , name: 'Player 1', color: PlayerColorBank.player1},
-                    {id:2 , name: 'Player 2', color: PlayerColorBank.player2},
-                ]
-            }));
+        setConfig((prevState)=>({...prevState, players: quickPlayPlayers}));
         navigate('/quickplay');
-
     },[navigate, setConfig]);
 
     const addPlayer = useCallback(() => {

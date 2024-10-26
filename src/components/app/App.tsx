@@ -5,19 +5,18 @@ import { Views } from '../../views/views';
 import { GameProvider } from '@contexts/game.context';
 import { TimerProvider } from '@contexts/timer.context.tsx';
 import { TURN_TIME } from '@components/app/consts.ts';
+import {RouteProvider} from '@contexts/router.context.tsx';
 
-function App(): React.JSX.Element {
+export default function App(): React.JSX.Element {
   return (
       <BrowserRouter basename="/">
-
+        <RouteProvider>
           <GameProvider>
               <TimerProvider initialTime ={TURN_TIME} >
               <Views/>
               </TimerProvider>
           </GameProvider>
-
+        </RouteProvider>
       </BrowserRouter>
   );
 }
-
-export default App;
