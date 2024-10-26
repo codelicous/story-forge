@@ -7,7 +7,6 @@ import React, {
     SetStateAction,
     useContext,
     useState} from 'react';
-import {PlayerColorBank} from '@components/app/consts';
 export type StoryEntry  = { text: string, user: string, turn: number};
 
 export type Story = {
@@ -46,8 +45,6 @@ export const GameProvider: React.FC<GameProps> = ({ children }) => {
     const [config, setConfig] = useState<GameConfig>({
         openerCategory: 'random',
         players: [
-            {id: 1, name: 'Tom', color: PlayerColorBank.player1},
-            {id: 2, name: 'Ofer', color: PlayerColorBank.player2},
         ]
     });
 
