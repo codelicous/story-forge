@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo } from 'react';
 import { useTimer } from '@contexts/timer.context';
 import ProgressBar from '@components/ProgressBar/ProgressBar';
+import {useGame} from '@contexts/game.context.tsx';
 
 export interface GameStatusProps extends ChildProps, Game {
     updatePlayerTurn: () => void,
-    endGame: () => void
+    endGame: () => void,
 }
 
 export default function GameStatus({
@@ -12,11 +13,12 @@ export default function GameStatus({
                                        nextPlayer,
                                        updatePlayerTurn,
                                        currentPlayerTime,
+                                       maxEntries,
                                        totalTurns,
                                        endGame
                                    }: GameStatusProps): React.JSX.Element {
     const { timer, stopCountdown } = useTimer();
-
+    const { story} = useGame();
     const isTimerEnd = useMemo(() => timer === 0, [timer]);
 
     useEffect(() => {
@@ -27,11 +29,11 @@ export default function GameStatus({
     }, [isTimerEnd, updatePlayerTurn]);
 
     useEffect(() => {
-        if (totalTurns <= 0) {
+        if (totalTurns <= 0 || story.entries?.length >= maxEntries) {
             stopCountdown();
             endGame();
         }
-    }, [totalTurns, endGame, stopCountdown]);
+    }, [totalTurns, endGame, stopCountdown, story.entries, maxEntries]);
 
     const percentage = useMemo(() => (timer / currentPlayerTime) * 100, [timer, currentPlayerTime]);
 
