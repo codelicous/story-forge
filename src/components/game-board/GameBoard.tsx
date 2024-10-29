@@ -4,6 +4,7 @@ import SidePanel from './side-panel/SidePanel';
 import StoryBoard from './story-board/StoryBoard';
 import {
     GameState,
+    MAX_ENTRIES,
     MAX_TURNS_PER_PLAYER,
     TURN_TIME,
 } from '../app/consts';
@@ -25,7 +26,8 @@ function GameBoard({className}: ChildProps): React.JSX.Element {
         nextPlayer: null,
         state: GameState.InGame,
         currentPlayerTime: TURN_TIME,
-        totalTurns: players.length * MAX_TURNS_PER_PLAYER
+        totalTurns: players.length * MAX_TURNS_PER_PLAYER,
+        maxEntries: MAX_ENTRIES
     });
     const [showGameDialog, setShowGameDialog] = useState(true);
 
