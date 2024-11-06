@@ -1,8 +1,8 @@
 import React, {ChangeEvent, useCallback, useEffect, useRef, useState} from 'react';
 import {useGame} from '@contexts/game.context.tsx';
 import openings from '@assets/openings.json';
-import classNames from 'classnames'
-import {MAX_WORDS, MIN_WORDS} from "@components/app/consts.ts";
+import classNames from 'classnames';
+import {MAX_WORDS, MIN_WORDS} from '@components/app/consts.ts';
 
 export type StoryBoardProps = ChildProps &
     {
@@ -58,7 +58,7 @@ export default function StoryBoard({className, updatePlayerTurn, game}: StoryBoa
     const validateInput = (text: string) => {
         const counter = text.trim().split(' ').length;
         return counter >= MIN_WORDS && counter <= MAX_WORDS;
-    }
+    };
 
     // const inputDisabled = useMemo(() => {
     //     const threeWordsPattern:RegExp = /^\S+ \S+ \S+$/;
