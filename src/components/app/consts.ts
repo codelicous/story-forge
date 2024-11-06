@@ -6,6 +6,8 @@ export enum GameState {
 
 export const TURN_TIME = 50_000;
 export const MAX_TURNS_PER_PLAYER = 4;
+export const MIN_WORDS = 2;
+export const MAX_WORDS = 5;
 export const MAX_ENTRIES = 15;
 
 export const PlayerColorBank = {
