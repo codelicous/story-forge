@@ -60,39 +60,37 @@ export default function StoryBoard({className, updatePlayerTurn, game}: StoryBoa
         return counter >= MIN_WORDS && counter <= MAX_WORDS;
     };
 
-    // const inputDisabled = useMemo(() => {
-    //     const threeWordsPattern:RegExp = /^\S+ \S+ \S+$/;
-    //     return !threeWordsPattern.test(activeText);
-    // }, [activeText]);
-
     return <div className={className}>
         <div className='flex flex-col h-3/4 w-full items-center'>
             <div className='text-container w-full h-3/4 flex flex-1 text-xl p-5'>
                 <div>
                     {content}
-                    <input
-                        ref={inputRef}
-                        autoFocus={true}
-                        type='text'
-                        value={activeText}
-                        onKeyDown={handleKeyDown}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => setActiveText(e.target.value)}
-                        className={`ml-2 bg-transparent h-7 w-fit text-xl
-                    border-b-2
-                     border-b-${game.activePlayer?.color}
-                     outline-0 text-${game.activePlayer?.color}`}
-                    ></input>
+                    <span className={classNames({
+                        'tooltip': textValidationAlert,
+                        'tooltip-warning': textValidationAlert,
+                        'tooltip-open': textValidationAlert
+                    })}
+                          data-tip={textValidationAlert ? textValidationAlert : ''}>
+                        <input
+                            ref={inputRef}
+                            autoFocus={true}
+                            type='text'
+                            value={activeText}
+                            onKeyDown={handleKeyDown}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) => setActiveText(e.target.value)}
+                            className={`ml-2 bg-transparent h-7 w-fit text-xl
+                        border-b-2
+                         border-b-${game.activePlayer?.color}
+                         outline-0 text-${game.activePlayer?.color}`}
+                        ></input>
+                    </span>
                 </div>
             </div>
-            <div className={classNames({
-                'tooltip': textValidationAlert,
-                'tooltip-warning': textValidationAlert,
-                'tooltip-open': textValidationAlert
-            })}
-                 data-tip={textValidationAlert ? textValidationAlert : ''}>
-                <button onClick={submitText}
+            <button onClick={submitText}
                     className='w-56 mt-6 disabled:bg-gray-400
-             disabled:cursor-not-allowed disabled:opacity-50'>Submit my Words</button></div>
+             disabled:cursor-not-allowed disabled:opacity-50'>Submit my Words
+            </button>
         </div>
-    </div>;
+    </div>
+;
 }
