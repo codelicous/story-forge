@@ -13,8 +13,7 @@ import { useGame } from '@contexts/game.context';
 import { useTimer } from '@contexts/timer.context.tsx';
 
 function GameBoard({className}: ChildProps): React.JSX.Element {
-    const { config : { players, openerCategory } } = useGame();
-
+    const { config : { players, openerCategory }} = useGame();
     const navigate = useNavigate();
     const { startCountdown } = useTimer();
 

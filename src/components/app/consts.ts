@@ -17,3 +17,7 @@ export const PlayerColorBank = {
 } as const;
 
 export const MAX_PLAYERS = Object.keys(PlayerColorBank).length;
+export const quickPlayPlayers = [
+    {id:1 , name: 'Player 1', color: PlayerColorBank.player1},
+    {id:2 , name: 'Player 2', color: PlayerColorBank.player2},
+];
