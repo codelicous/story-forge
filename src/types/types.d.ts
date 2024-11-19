@@ -18,6 +18,7 @@ declare global {
         nextPlayer: Player| null;
         currentPlayerTime: number
         totalTurns: number;
+        maxEntries: number;
     }
     export interface ChildProps {
         className?: string;
