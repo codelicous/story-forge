@@ -1,5 +1,5 @@
 import React, {ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {StoryEntry, useGame} from '@contexts/game.context.tsx';
+import { useGame } from '@contexts/game.context.tsx';
 import openings from '@assets/openings.json';
 
 export type StoryBoardProps = ChildProps &
