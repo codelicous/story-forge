@@ -30,7 +30,6 @@ export default function GameStatus({
     }, [isTimerEnd, updatePlayerTurn]);
 
     useEffect(() => {
-        console.log( story.entries?.length);
         if (totalTurns <= 0 || story.entries?.length >= maxEntries) {
             stopCountdown();
             endGame();
