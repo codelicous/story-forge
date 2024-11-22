@@ -9,14 +9,15 @@ export interface GameStatusProps extends ChildProps, Game {
 }
 
 export default function GameStatus({
-                                       activePlayer,
-                                       nextPlayer,
-                                       updatePlayerTurn,
-                                       currentPlayerTime,
-                                       maxEntries,
-                                       totalTurns,
-                                       endGame
-                                   }: GameStatusProps): React.JSX.Element {
+    activePlayer,
+    nextPlayer,
+    updatePlayerTurn,
+    currentPlayerTime,
+    maxEntries,
+    totalTurns,
+    endGame
+}: GameStatusProps): React.JSX.Element {
+
     const { timer, stopCountdown } = useTimer();
     const { story} = useGame();
     const isTimerEnd = useMemo(() => timer === 0, [timer]);
@@ -29,6 +30,7 @@ export default function GameStatus({
     }, [isTimerEnd, updatePlayerTurn]);
 
     useEffect(() => {
+        console.log( story.entries?.length);
         if (totalTurns <= 0 || story.entries?.length >= maxEntries) {
             stopCountdown();
             endGame();

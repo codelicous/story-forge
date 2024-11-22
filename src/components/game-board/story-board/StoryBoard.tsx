@@ -1,5 +1,5 @@
 import React, {ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {useGame} from '@contexts/game.context.tsx';
+import {StoryEntry, useGame} from '@contexts/game.context.tsx';
 import openings from '@assets/openings.json';
 
 export type StoryBoardProps = ChildProps &
@@ -12,7 +12,7 @@ export default function StoryBoard({className, updatePlayerTurn, game}: StoryBoa
 
     const [activeText, setActiveText] = useState<string>('');
     const inputRef = useRef<HTMLInputElement>(null);
-    const {addEntry, addOpener, content, story} = useGame();
+    const {addEntry, addOpener, story, config: {mode}} = useGame();
     document.onclick = () => inputRef && inputRef.current?.focus();
 
     useEffect(() => {
@@ -53,7 +53,12 @@ export default function StoryBoard({className, updatePlayerTurn, game}: StoryBoa
         <div className='flex flex-col h-3/4 w-full items-center'>
             <div className='text-container w-full h-3/4 flex flex-1 text-xl p-5'>
                 <div>
-                    {content}
+                    ${story.opener}
+                    {story.entries.map((entry, index) =>
+                        <span style={{ filter: mode === 'last_2_entries' && index >= 2 && story.entries.length - index > 2 ?  'blur(4px)' : undefined}}>
+                            {entry.text}
+                        </span>)
+                    }
                     <input
                         ref={inputRef}
                         autoFocus={true}

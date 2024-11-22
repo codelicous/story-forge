@@ -21,3 +21,14 @@ export const quickPlayPlayers = [
     {id:1 , name: 'Player 1', color: PlayerColorBank.player1},
     {id:2 , name: 'Player 2', color: PlayerColorBank.player2},
 ];
+
+export const GAME_MODES = [
+    {
+        id: 'full_story',
+        text: 'Full story'
+    },
+    {
+        id:'last_2_entries',
+        text: 'Last 2 entries'
+    }
+] as const;

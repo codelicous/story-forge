@@ -1,7 +1,7 @@
 import React, {useCallback} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {useGame} from '@contexts/game.context';
-import {MAX_PLAYERS, PlayerColorBank, quickPlayPlayers} from '@components/app/consts';
+import {GameConfig, useGame} from '@contexts/game.context';
+import {GAME_MODES, MAX_PLAYERS, PlayerColorBank, quickPlayPlayers} from '@components/app/consts';
 import openings from '@assets/openings.json';
 
 const categories = Object.keys(openings);
@@ -9,11 +9,15 @@ const playerColors = Object.values(PlayerColorBank);
 
 export const Welcome = (): React.JSX.Element => {
     const navigate = useNavigate();
-    const { config: { players, openerCategory }, setConfig } = useGame();
+    const { config: { players, openerCategory, mode: gameMode }, setConfig } = useGame();
     const inputRef = React.useRef<HTMLInputElement>(null);
 
     const onCategoryChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setConfig((prevState) => ({...prevState, openerCategory: event.target.value as Game['openerCategory']}));
+    }, [setConfig]);
+
+    const onModeChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setConfig((prevState) => ({...prevState, mode: event.target.value as GameConfig['mode']}));
     }, [setConfig]);
 
     const onPlayClick = useCallback(() => {
@@ -23,7 +27,7 @@ export const Welcome = (): React.JSX.Element => {
         }
     }, [players, navigate]);
 
-    const onQuickPlayClick = useCallback(()=>{
+    const onQuickPlayClick = useCallback(()=> {
         setConfig((prevState)=>({...prevState, players: quickPlayPlayers}));
         navigate('/quickplay');
     },[navigate, setConfig]);
@@ -48,6 +52,16 @@ export const Welcome = (): React.JSX.Element => {
                         <span className="label-text">{category}</span>
                         <input checked={openerCategory === category} onChange={onCategoryChange} type="radio"
                                name="category" value={category} className="radio checked:bg-black-500"/>
+                    </label>
+                ))}
+            </label>
+            <label>
+                <p>Select a mode</p>
+                {GAME_MODES.map((mode) => (
+                    <label key={mode.id} className="label cursor-pointer">
+                        <span className="label-text">{mode.text}</span>
+                        <input checked={gameMode === mode.id} onChange={onModeChange} type="radio"
+                               name="mode" value={mode.id} className="radio checked:bg-black-500"/>
                     </label>
                 ))}
             </label>
