@@ -55,7 +55,7 @@ export const GameProvider: React.FC<GameProps> = ({children}) => {
 
     useEffect(() => {
         setContent(`${story.opener} ${story.entries.reduce<string>((acc: string, currentValue: StoryEntry) =>
-            acc.concat(currentValue.text), '')}`);
+            acc.concat(' '+ currentValue.text), '')}`);
     }, [story]);
 
     const value = {
