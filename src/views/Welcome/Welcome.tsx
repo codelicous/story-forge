@@ -23,11 +23,14 @@ export const Welcome = (): React.JSX.Element => {
         }
     }, [players, navigate]);
 
-    const onQuickPlayClick = useCallback(()=>{
+    const onQuickPlayClick = useCallback(async ()=>{
+
         setConfig((prevState)=>({...prevState, players: quickPlayPlayers}));
         navigate('/quickplay');
     },[navigate, setConfig]);
-
+    const testServerClick = useCallback(()=>{
+        navigate('/test-server');
+    },[navigate]);
     const addPlayer = useCallback(() => {
         const value = inputRef.current?.value;
         if (value) {
@@ -68,6 +71,9 @@ export const Welcome = (): React.JSX.Element => {
 
             <button className="btn btn-primary" type="submit" onClick={onQuickPlayClick}>
                 Quick Play (2 Players)
+            </button>
+            <button className="btn btn-primary" type="submit" onClick={testServerClick}>
+                Test Server
             </button>
 
         </div>

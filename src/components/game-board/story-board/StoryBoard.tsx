@@ -31,6 +31,7 @@ export default function StoryBoard({className, updatePlayerTurn, game}: StoryBoa
         addEntry({
             turn: game.totalTurns, user: game.activePlayer?.name || '', text: activeText.trim()
         });
+        fetch('/api',{method:'GET'}).then(res => res.json()).then(console.log);
         inputRef?.current?.focus();
         setActiveText('');
         updatePlayerTurn();
