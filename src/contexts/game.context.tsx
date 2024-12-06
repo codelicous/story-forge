@@ -1,14 +1,13 @@
 import React, {
     createContext,
     useCallback,
-    useEffect,
     Dispatch,
     ReactNode,
     SetStateAction,
     useContext,
     useState
 } from 'react';
-import {quickPlayPlayers} from '@components/app/consts.ts';
+import {GAME_MODES, quickPlayPlayers} from '@components/app/consts.ts';
 import {useLocation} from 'react-router-dom';
 
 export type StoryEntry = { text: string, user: string, turn: number };
@@ -17,7 +16,10 @@ export type Story = {
     entries: StoryEntry[];
     opener: string;
 }
-type GameConfig = Pick<Game, 'players' | 'openerCategory'>;
+
+export type GameConfig = Pick<Game, 'players' | 'openerCategory' > & {
+    mode: typeof GAME_MODES[number]['id']
+};
 
 type GameContextProps = {
     isTriggered: boolean;
@@ -28,7 +30,6 @@ type GameContextProps = {
     setStory: (story: Story) => void;
     addEntry: (storyEntry: StoryEntry) => void;
     addOpener: (opener: string) => void;
-    content: string
 }
 
 const GameContext = createContext<GameContextProps | null>(null);
@@ -39,31 +40,29 @@ export const GameProvider: React.FC<GameProps> = ({children}) => {
     const [isTriggered, setIsTriggered] = useState(false);
     const location = useLocation();
     const [story, setStory] = useState<Story>({entries: [], opener: ''});
-    const [content, setContent] = useState('');
+
     const addEntry = useCallback((storyEntry: StoryEntry) => {
         setStory({...story, entries: [...story.entries, storyEntry]});
     }, [story]);
+
     const getPlayers = useCallback((pathName: string) => pathName === '/quickplay' ? quickPlayPlayers : []
         , []);
+
     const addOpener = useCallback((opener: string) => {
         setStory({...story, opener});
     }, [story]);
+
     const [config, setConfig] = useState<GameConfig>({
         openerCategory: 'random',
-        players: getPlayers(location.pathname)
+        players: getPlayers(location.pathname),
+        mode: 'full_story'
     });
-
-    useEffect(() => {
-        setContent(`${story.opener} ${story.entries.reduce<string>((acc: string, currentValue: StoryEntry) =>
-            acc.concat(' '+ currentValue.text), '')}`);
-    }, [story]);
 
     const value = {
         isTriggered,
         story,
         addEntry,
         addOpener,
-        content,
         config,
         setStory,
         setIsTriggered,

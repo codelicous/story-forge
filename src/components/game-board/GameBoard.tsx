@@ -18,7 +18,6 @@ function GameBoard({className}: ChildProps): React.JSX.Element {
     const { startCountdown } = useTimer();
 
     const [game, setGame] = useState<Game>({
-        content: '',
         openerCategory,
         players,
         activePlayer: null,
