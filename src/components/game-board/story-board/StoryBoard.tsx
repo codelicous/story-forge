@@ -49,16 +49,18 @@ export default function StoryBoard({className, updatePlayerTurn, game}: StoryBoa
         return !threeWordsPattern.test(activeText);
     }, [activeText]);
 
+    const isLast2Entries = mode === 'last_2_entries';
+
     return <div className={className}>
         <div className='flex flex-col h-3/4 w-full items-center'>
             <div className='text-container w-full h-3/4 flex flex-1 text-xl p-5'>
                 <div className='max-w-2xl'>
-                    ${story.opener}
-                    {story.entries.map((entry, index) =>
-                        <span style={{ filter: mode === 'last_2_entries' && index >= 2 && story.entries.length - index > 2 ?  'blur(4px)' : undefined}}>
+                    <span style={{filter: isLast2Entries && story.entries.length > 2 ? 'blur(4px)' : undefined}}>{story.opener}</span>
+                    {story.entries.map((entry, index) => (
+                        <span key={index} style={{ filter: isLast2Entries && story.entries.length - index > 2 ?  'blur(4px)' : undefined}}>
                             {entry.text}
-                        </span>)
-                    }
+                        </span>
+                    ))}
                     <input
                         ref={inputRef}
                         autoFocus={true}
@@ -67,16 +69,15 @@ export default function StoryBoard({className, updatePlayerTurn, game}: StoryBoa
                         onKeyDown={handleKeyDown}
                         onChange={(e: ChangeEvent<HTMLInputElement>) => setActiveText(e.target.value)}
                         className={`ml-2 bg-transparent h-7 w-fit text-xl
-                    border-b-2
+                     border-b-2
                      border-b-${game.activePlayer?.color}
                      outline-0 text-${game.activePlayer?.color}`}
-                    ></input>
+                    />
                 </div>
             </div>
             <button disabled={inputDisabled}
                     onClick={submitText}
-                    className='w-56 mt-6 disabled:bg-gray-400
-             disabled:cursor-not-allowed disabled:opacity-50'>Submit my Words
+                    className='w-56 mt-6 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-50'>Submit my Words
             </button>
         </div>
     </div>;
