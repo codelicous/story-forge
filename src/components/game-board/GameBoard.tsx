@@ -25,6 +25,7 @@ function GameBoard({className}: ChildProps): React.JSX.Element {
         nextPlayer: null,
         state: GameState.InGame,
         currentPlayerTime: TURN_TIME,
+        story: {entries: [], opener: ''},
         totalTurns: players.length * MAX_TURNS_PER_PLAYER,
         maxEntries: MAX_ENTRIES
     });
