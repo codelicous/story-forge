@@ -11,7 +11,7 @@ import React, {
 import {quickPlayPlayers} from '@components/app/consts.ts';
 import {useLocation} from 'react-router-dom';
 
-export type StoryEntry = { text: string, user: string, turn: number };
+export type StoryEntry = { text: string, user: string, turn?: number };
 
 export type Story = {
     entries: StoryEntry[];
