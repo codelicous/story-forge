@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {ChangeEvent, useCallback, useEffect, useRef, useState} from 'react';
 import {useGame} from '@contexts/game.context.tsx';
 import openings from '@assets/openings.json';
 import classNames from 'classnames';
@@ -16,9 +16,9 @@ export default function StoryBoard({className, updatePlayerTurn, game}: StoryBoa
     const [inputDisabled, setInputDisabled] = useState<boolean>(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const {addEntry, addOpener, content, story} = useGame();
+    const [wordCounter, setWordCounter] = useState(0);
     const [textValidationAlert, setTextValidationAlert] = useState<string>('');
     const validationText = `Please insert a sentence between ${MIN_WORDS} and ${MAX_WORDS} words`;
-    const wordCounter = useMemo(() => activeText.trim().split(' ').length, [activeText]);
 
     document.onclick = () => inputRef && inputRef.current?.focus();
 
@@ -26,42 +26,50 @@ export default function StoryBoard({className, updatePlayerTurn, game}: StoryBoa
         if (!story.opener) {
             const category = game.openerCategory || 'random';
             const selectedIndex = Math.floor(Math.random() * openings[category].length);
-            setInputDisabled(true);
             addOpener(openings[category][selectedIndex]);
         }
     }, [addOpener, game.openerCategory, story.opener]);
 
     const submitText = useCallback(() => {
-        if (!activeText) {
-            setInputDisabled(true);
-            return;
-        }
-
         if (wordCounter <= MIN_WORDS) {
             setTextValidationAlert(validationText);
             return;
         }
 
-        setTextValidationAlert('');
-        addEntry({
-            turn: game.totalTurns, user: game.activePlayer?.name || '', text: activeText.trim()
-        });
-        inputRef?.current?.focus();
-        setActiveText('');
-        updatePlayerTurn();
-        setInputDisabled(true);
-
-    }, [activeText, addEntry, wordCounter, game.activePlayer?.name, game.totalTurns, updatePlayerTurn, validationText]);
-
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        setInputDisabled(false);
-        setTextValidationAlert('');
-
-        if (wordCounter > MAX_WORDS) {
-            setTextValidationAlert(validationText);
+        if (inputDisabled) {
             return;
         }
 
+        addEntry({
+            turn: game.totalTurns, user: game.activePlayer?.name || '', text: activeText.trim()
+        });
+
+        updatePlayerTurn();
+
+    }, [activeText, addEntry, game.activePlayer?.name, game.totalTurns, inputDisabled, updatePlayerTurn, validationText, wordCounter]);
+
+    const onChange = (e: ChangeEvent<HTMLInputElement>): void => {
+        const newValue = e.target.value;
+        setActiveText(newValue);
+
+        setTextValidationAlert('');
+        setInputDisabled(false);
+
+        const currentWordCount = newValue.trim().split(/\s+/).length;
+        setWordCounter(currentWordCount);
+
+        if (currentWordCount <= MIN_WORDS) {
+            setInputDisabled(true);
+        }
+
+        if (currentWordCount > MAX_WORDS) {
+            setTextValidationAlert(validationText);
+            setInputDisabled(true);
+            return;
+        }
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             e.preventDefault();
             submitText();
@@ -85,7 +93,7 @@ export default function StoryBoard({className, updatePlayerTurn, game}: StoryBoa
                             type='text'
                             value={activeText}
                             onKeyDown={handleKeyDown}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) => setActiveText(e.target.value)}
+                            onChange={onChange}
                             className={`ml-2 bg-transparent h-7 w-fit text-xl
                         border-b-2
                          border-b-${game.activePlayer?.color}
@@ -95,7 +103,7 @@ export default function StoryBoard({className, updatePlayerTurn, game}: StoryBoa
                 </div>
             </div>
             <button onClick={submitText}
-                    disabled={inputDisabled}
+                    disabled={inputDisabled || !activeText}
                     className='w-56 mt-6 disabled:bg-gray-400
              disabled:cursor-not-allowed disabled:opacity-50'>Submit my Words
             </button>
