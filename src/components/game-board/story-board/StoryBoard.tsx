@@ -37,7 +37,7 @@ export default function StoryBoard({className, updatePlayerTurn, game}: StoryBoa
     };
 
     const submitText = useCallback(() => {
-        if (wordCounter <= MIN_WORDS) {
+        if (wordCounter < MIN_WORDS) {
             setTextValidationAlert(validationText);
             return;
         }
@@ -65,7 +65,7 @@ export default function StoryBoard({className, updatePlayerTurn, game}: StoryBoa
         const currentWordCount = newValue.trim().split(/\s+/).length;
         setWordCounter(currentWordCount);
 
-        if (currentWordCount <= MIN_WORDS) {
+        if (currentWordCount < MIN_WORDS) {
             setInputDisabled(true);
         }
 
