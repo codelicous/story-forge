@@ -30,7 +30,7 @@ export default function StoryBoard({className, updatePlayerTurn, game}: StoryBoa
         }
     }, [addOpener, game.openerCategory, story.opener]);
 
-    const clearState = () => {
+    const clearState = (): void => {
         setActiveText('');
         setInputDisabled(false);
         setTextValidationAlert('');
