@@ -30,6 +30,12 @@ export default function StoryBoard({className, updatePlayerTurn, game}: StoryBoa
         }
     }, [addOpener, game.openerCategory, story.opener]);
 
+    const clearState = () => {
+        setActiveText('');
+        setInputDisabled(false);
+        setTextValidationAlert('');
+    };
+
     const submitText = useCallback(() => {
         if (wordCounter <= MIN_WORDS) {
             setTextValidationAlert(validationText);
@@ -44,6 +50,7 @@ export default function StoryBoard({className, updatePlayerTurn, game}: StoryBoa
             turn: game.totalTurns, user: game.activePlayer?.name || '', text: activeText.trim()
         });
 
+        clearState();
         updatePlayerTurn();
 
     }, [activeText, addEntry, game.activePlayer?.name, game.totalTurns, inputDisabled, updatePlayerTurn, validationText, wordCounter]);
