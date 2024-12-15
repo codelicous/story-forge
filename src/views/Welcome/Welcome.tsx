@@ -1,7 +1,7 @@
 import React, {useCallback} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useGame} from '@contexts/game.context';
-import {MAX_PLAYERS, PlayerColorBank} from '@components/app/consts';
+import {MAX_PLAYERS, PlayerColorBank, quickPlayPlayers} from '@components/app/consts';
 import openings from '@assets/openings.json';
 
 const categories = Object.keys(openings);
@@ -19,9 +19,14 @@ export const Welcome = (): React.JSX.Element => {
     const onPlayClick = useCallback(() => {
         const isValid = players.every((player) => player.name.trim().length);
         if (isValid) {
-            navigate('/');
+            navigate('/game');
         }
     }, [players, navigate]);
+
+    const onQuickPlayClick = useCallback(()=>{
+        setConfig((prevState)=>({...prevState, players: quickPlayPlayers}));
+        navigate('/quickplay');
+    },[navigate, setConfig]);
 
     const addPlayer = useCallback(() => {
         const value = inputRef.current?.value;
@@ -41,7 +46,8 @@ export const Welcome = (): React.JSX.Element => {
                 {categories.map((category) => (
                     <label key={category} className="label cursor-pointer">
                         <span className="label-text">{category}</span>
-                        <input checked={openerCategory === category} onChange={onCategoryChange} type="radio" name="category" value={category} className="radio checked:bg-black-500"  />
+                        <input checked={openerCategory === category} onChange={onCategoryChange} type="radio"
+                               name="category" value={category} className="radio checked:bg-black-500"/>
                     </label>
                 ))}
             </label>
@@ -59,6 +65,11 @@ export const Welcome = (): React.JSX.Element => {
             <button className="btn btn-primary" type="submit" onClick={onPlayClick}>
                 Play
             </button>
+
+            <button className="btn btn-primary" type="submit" onClick={onQuickPlayClick}>
+                Quick Play (2 Players)
+            </button>
+
         </div>
     );
 };

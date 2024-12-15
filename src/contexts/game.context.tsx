@@ -6,9 +6,12 @@ import React, {
     ReactNode,
     SetStateAction,
     useContext,
-    useState} from 'react';
-import {PlayerColorBank} from '@components/app/consts';
-export type StoryEntry  = { text: string, user: string, turn: number};
+    useState
+} from 'react';
+import {quickPlayPlayers} from '@components/app/consts.ts';
+import {useLocation} from 'react-router-dom';
+
+export type StoryEntry = { text: string, user: string, turn: number };
 
 export type Story = {
     entries: StoryEntry[];
@@ -25,38 +28,37 @@ type GameContextProps = {
     setStory: (story: Story) => void;
     addEntry: (storyEntry: StoryEntry) => void;
     addOpener: (opener: string) => void;
-    content : string
+    content: string
 }
 
-const GameContext = createContext<GameContextProps| null>(null);
+const GameContext = createContext<GameContextProps | null>(null);
 
 type GameProps = { children?: ReactNode };
 
-export const GameProvider: React.FC<GameProps> = ({ children }) => {
+export const GameProvider: React.FC<GameProps> = ({children}) => {
     const [isTriggered, setIsTriggered] = useState(false);
-    const [story,setStory] = useState<Story>({entries: [], opener:''});
+    const location = useLocation();
+    const [story, setStory] = useState<Story>({entries: [], opener: ''});
     const [content, setContent] = useState('');
     const addEntry = useCallback((storyEntry: StoryEntry) => {
         setStory({...story, entries: [...story.entries, storyEntry]});
     }, [story]);
-
-    const addOpener  = useCallback((opener: string)=>{
+    const getPlayers = useCallback((pathName: string) => pathName === '/quickplay' ? quickPlayPlayers : []
+        , []);
+    const addOpener = useCallback((opener: string) => {
         setStory({...story, opener});
-    },[story]);
+    }, [story]);
     const [config, setConfig] = useState<GameConfig>({
         openerCategory: 'random',
-        players: [
-            {id: 1, name: 'Tom', color: PlayerColorBank.player1},
-            {id: 2, name: 'Ofer', color: PlayerColorBank.player2},
-        ]
+        players: getPlayers(location.pathname)
     });
 
     useEffect(() => {
-        setContent(  `${story.opener} ${story.entries.reduce<string>((acc: string, currentValue: StoryEntry)=>
-         acc.concat(currentValue.text),'')}`);
+        setContent(`${story.opener} ${story.entries.reduce<string>((acc: string, currentValue: StoryEntry) =>
+            acc.concat(' '+ currentValue.text), '')}`);
     }, [story]);
 
-    const value =  {
+    const value = {
         isTriggered,
         story,
         addEntry,
