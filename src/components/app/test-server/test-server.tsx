@@ -49,7 +49,7 @@ export default function TestServer(): React.JSX.Element {
     }, [initGame]);
 
     const openWebSocket = useCallback(async () => {
-        socket = new WebSocket('ws://localhost:8000/ws');
+        socket = new WebSocket('ws://localhost:8000/game/live');
         socket.addEventListener('open', wsRes => {
             setWsContent('connection established');
             setIsConnected(true);
