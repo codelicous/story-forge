@@ -88,6 +88,9 @@ export default function TestServer(): React.JSX.Element {
         const entry: StoryEntry = { text: 'some_text', user: '1' }
         socket?.send(socketPayload({message: 'add_entry', entry}));
     }, [])
+    const killSocket = useCallback(async () => {
+        socket?.send(JSON.stringify({socketId, message: 'kill_socket', sessionId: sessionId}));
+    },[])
     return (
         <>
             <button className='btn-active' onClick={testGet}>Init GamesTest</button>
@@ -95,6 +98,7 @@ export default function TestServer(): React.JSX.Element {
             <button className='btn-active' onClick={openWebSocket}>open Web Socket</button>
             <button className='btn-active' onClick={passTurn}>Pass Turn</button>
             <button className='btn-active' onClick={addEntry}>Add Entry</button>
+            <button className='btn-active' onClick={killSocket}>Kill Socket</button>
             <button className='btn-active' disabled={!isConnected} onClick={sendWebSocketMessage}>Send Web Socket
                 Message
             </button>
