@@ -62,10 +62,10 @@ export const Welcome = (): React.JSX.Element => {
                         className="btn btn-primary"
                         onClick={ addPlayer }>Add Player</button> }
             </label>
-
+            { players.length ? <div className='font-bold text-2xl'>Players:</div> : ''}
             {
-                players.map((player) => (
-                    <div key={ player.id } className="flex items-center gap-2">
+                players.map((player, index) => (
+                    <div key={ player.id } className={ `text-${playerColors[index + 1]} flex items-center gap-2 text-2xl`}>
                         { player.name }
                     </div>
                 ))
