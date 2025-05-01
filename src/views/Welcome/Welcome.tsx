@@ -40,7 +40,7 @@ export const Welcome = (): React.JSX.Element => {
 
     return (
         <div className="form-control max-w-xs mx-auto gap-4">
-            <h2>Welcome to StoryForge!</h2>
+            <img src='src/assets/story_forge.png' alt=''></img>
             <label>
                 <p>Select a story category</p>
                 { categories.map((category) => (
