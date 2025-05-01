@@ -1,4 +1,4 @@
-import React, { KeyboardEvent, useCallback, useState } from 'react';
+import React, { KeyboardEvent,useCallback , useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGame } from '@contexts/game.context';
 import { MAX_PLAYERS, PlayerColorBank, quickPlayPlayers } from '@components/app/consts';
@@ -26,14 +26,16 @@ export const Welcome = (): React.JSX.Element => {
     const onPlayClick = useCallback(() => {
         navigate('/game');
     }, [players, navigate]);
-    const onQuickPlayClick = useCallback(async ()=>{
 
-        setConfig((prevState)=>({...prevState, players: quickPlayPlayers}));
+
+    const onQuickPlayClick = useCallback(async () => {
+
+        setConfig((prevState) => ({ ...prevState, players: quickPlayPlayers }));
         navigate('/quickplay');
     }, [navigate, setConfig]);
-    const testServerClick = useCallback(()=>{
+    const testServerClick = useCallback(() => {
         navigate('/test-server');
-    },[navigate]);
+    }, [navigate]);
     const addPlayer = useCallback(() => {
         if (currentPlayerName) {
             setConfig((prevState) => ({
@@ -89,10 +91,9 @@ export const Welcome = (): React.JSX.Element => {
             <button className="btn btn-primary" type="submit" onClick={ onQuickPlayClick }>
                 Quick Play (2 Players)
             </button>
-            <button className="btn btn-primary" type="submit" onClick={testServerClick}>
+            <button className="btn btn-primary" type="submit" onClick={ testServerClick }>
                 Test Server
             </button>
-
         </div>
     );
 };
