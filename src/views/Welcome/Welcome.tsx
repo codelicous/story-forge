@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { KeyboardEvent, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGame } from '@contexts/game.context';
 import { MAX_PLAYERS, PlayerColorBank, quickPlayPlayers } from '@components/app/consts';
@@ -16,6 +16,13 @@ export const Welcome = (): React.JSX.Element => {
     }, [setConfig]);
     const isGameValid = useCallback(() => players?.length > 1 && players.every(player => player.name.trim().length > 2), [players]);
     const playerNameValid = useCallback(() => currentPlayerName.length > 2, [currentPlayerName]);
+
+    const onInputKeyDown = useCallback((event:KeyboardEvent<HTMLInputElement>)=> {
+        if (event.key === 'Enter' && playerNameValid()) {
+            addPlayer();
+        }
+    }, [currentPlayerName]);
+
     const onPlayClick = useCallback(() => {
         navigate('/game');
     }, [players, navigate]);
@@ -42,11 +49,11 @@ export const Welcome = (): React.JSX.Element => {
         <div className="form-control max-w-xs mx-auto gap-4">
             <img src='src/assets/story_forge.png' alt=''></img>
             <label>
-                <p>Select a story category</p>
+                <div className='font-bold text-2xl'>Select a story category</div>
                 { categories.map((category) => (
                     <label key={ category } className="label cursor-pointer">
                         <span className="label-text capitalize">{ category }</span>
-                        <input checked={ openerCategory === category } onChange={ onCategoryChange } type="radio"
+                        <input  checked={ openerCategory === category } onChange={ onCategoryChange } type="radio"
                                name="category" value={ category } className="radio checked:bg-black-500"/>
                     </label>
                 )) }
@@ -54,7 +61,7 @@ export const Welcome = (): React.JSX.Element => {
 
             <label className="input input-bordered flex items-center gap-2">
 
-                <input value={ currentPlayerName } onChange={ event => setCurrentPlayerName(event.target.value) }
+                <input onKeyDown={ e=> onInputKeyDown(e) } value={ currentPlayerName } onChange={ event => setCurrentPlayerName(event.target.value) }
                        className="grow" placeholder="Name" type="text"/>
                 { players.length <= MAX_PLAYERS &&
                     <button
