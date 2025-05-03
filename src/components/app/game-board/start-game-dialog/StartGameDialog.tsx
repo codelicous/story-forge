@@ -8,11 +8,13 @@ export type StartGameDialogProps = ChildProps & {
 
 export function StartGameDialog({ className, startingPlayerName, triggerStartGame, isOpen }: StartGameDialogProps) {
     return <Dialog className={ className } isOpen={ isOpen }>
-        <div>
+        <div className='flex flex-col align-middle p-9 rounded-lg bg-blue-500'>
+        <div className="p-8">
             <div className='capitalize'> { startingPlayerName },</div>
             <div>You Start Our Story</div>
         </div>
-        <button className='mt-6' onClick={ triggerStartGame }>Let's Start</button>
+        <button className='m-1 mt-6' onClick={ triggerStartGame }>Let's Start</button>
+        </div>
     </Dialog>;
 
 }

@@ -22,7 +22,7 @@ export default {
         `border-b-${PlayerColorBank.player5}`,
         `bg-${PlayerColorBank.player1}`,
         `bg-${PlayerColorBank.player2}`,
-        `bg-p${PlayerColorBank.player3}`,
+        `bg-${PlayerColorBank.player3}`,
         `bg-${PlayerColorBank.player4}`,
         `bg-${PlayerColorBank.player5}`,
 

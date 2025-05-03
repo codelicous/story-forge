@@ -112,7 +112,7 @@ export default function StoryBoard({className, updatePlayerTurn, game}: StoryBoa
             <button onClick={submitText}
                     disabled={inputDisabled || !activeText}
                     className='w-56 mt-6 disabled:bg-gray-400
-             disabled:cursor-not-allowed disabled:opacity-50'>Submit my Words
+             disabled:cursor-not-allowed disabled:opacity-50'>Add Line
             </button>
         </div>
     </div>
