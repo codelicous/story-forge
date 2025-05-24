@@ -28,6 +28,8 @@ export default {
 
     ],
     theme: {
+        light: 'default',
+        dark:' '
     },
     plugins: [daisyui],
 };

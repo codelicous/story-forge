@@ -7,7 +7,7 @@ import TestServer from '@components/app/test-server/test-server.tsx';
 
 export const Views = (): React.JSX.Element => (
     <Routes>
-        <Route path='/' element={<Welcome />} />
+        <Route path='/' element={<Welcome  />} />
         <Route path='/welcome' element={<Welcome />} />
         <Route path='/test-server' element={<TestServer />} />
         <Route path='/quickplay' element={<GameBoard className='flex w-full h-full'/>} />
