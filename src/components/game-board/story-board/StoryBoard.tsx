@@ -30,12 +30,6 @@ export default function StoryBoard({className, updatePlayerTurn, game}: StoryBoa
         }
     }, [addOpener, game.openerCategory, story.opener]);
 
-    const clearState = (): void => {
-        setActiveText('');
-        setInputDisabled(false);
-        setTextValidationAlert('');
-    };
-
     const submitText = useCallback(() => {
         if (wordCounter < MIN_WORDS) {
             setTextValidationAlert(validationText);

@@ -1,0 +1,21 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <!-- Face circle -->
+    <circle cx="50" cy="50" r="35" fill="none" stroke="currentColor" stroke-width="2"/>
+
+    <!-- Left eye (normal) -->
+    <circle cx="38" cy="40" r="4" fill="currentColor"/>
+
+    <!-- Right eye (squinting/confused) -->
+    <path d="M58 38 L66 42 M58 42 L66 38" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+
+    <!-- Confused eyebrows -->
+    <path d="M32 30 Q38 28, 44 30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <path d="M56 32 Q60 28, 66 30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- Wavy confused mouth -->
+    <path d="M40 62 Q45 58, 50 62 Q55 66, 60 62" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+
+    <!-- Question mark above head -->
+    <path d="M50 8 Q55 5, 55 12 Q55 15, 50 15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="50" cy="20" r="1.5" fill="currentColor"/>
+</svg>
