@@ -11,13 +11,13 @@ import {
 import {StartGameDialog} from '@components/app/game-board/start-game-dialog/StartGameDialog';
 import { useGame } from '@contexts/game.context';
 import { useTimer } from '@contexts/timer.context.tsx';
-// import { useWebSocket } from '@contexts/websocket.context.tsx';
+import { useWebSocket } from '@contexts/websocket.context.tsx';
 
 function GameBoard({className}: ChildProps): React.JSX.Element {
     const { config : { players, openerCategory }} = useGame();
     const navigate = useNavigate();
     const { startCountdown } = useTimer();
-    // const { isConnected, openWebSocket, passTurn, addEntry } = useWebSocket();
+    const { openWebSocket } = useWebSocket();
 
     const [game, setGame] = useState<Game>({
         content: '',
@@ -35,8 +35,9 @@ function GameBoard({className}: ChildProps): React.JSX.Element {
 
     const okDialogAction = useCallback(() => {
         setShowGameDialog(false);
+        openWebSocket();
         startCountdown();
-    },[startCountdown, setShowGameDialog]);
+    },[startCountdown, setShowGameDialog, openWebSocket]);
 
     const setEndGame = useCallback(() => {
         // TODO: Add logic to end the game
@@ -54,7 +55,7 @@ const updatePlayerInsideGameObject = useCallback((prevGame: Game) => {
     const nextPlayerIndex = (currentPlayerIndex + 1) % prevGame.players.length;
     return {
         ...prevGame,
-        totalTurns: prevGame.totalTurns - 1,
+        totalTurns: (prevGame.totalTurns || 0) - 1,
         activePlayer: prevGame.players[nextPlayerIndex],
         nextPlayer: prevGame.players[(nextPlayerIndex + 1) % prevGame.players.length],
 

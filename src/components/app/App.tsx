@@ -10,13 +10,13 @@ import { TURN_TIME } from '@components/app/consts.ts';
 export default function App(): React.JSX.Element {
   return (
       <BrowserRouter basename="/">
+          <GameProvider>
           <WebSocketProvider>
-              <GameProvider>
                   <TimerProvider initialTime={TURN_TIME}>
                       <Views/>
                   </TimerProvider>
-              </GameProvider>
           </WebSocketProvider>
+          </GameProvider>
       </BrowserRouter>
   );
 }

@@ -1,5 +1,5 @@
 
-export const initGame  = async(data: any): Promise<Game| undefined> =>{
+export const initGame  = async(data: Partial<Game>): Promise<Game| undefined> =>{
     try {
         const response = await fetch('/api/initGame',{
             method: 'POST',
@@ -15,4 +15,4 @@ export const initGame  = async(data: any): Promise<Game| undefined> =>{
     } catch (e) {
         console.error(e);
     }
-}
+};

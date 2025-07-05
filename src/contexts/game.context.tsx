@@ -8,8 +8,6 @@ import React, {
     useContext,
     useState
 } from 'react';
-import {quickPlayPlayers} from '@components/app/consts.ts';
-import {useLocation} from 'react-router-dom';
 
 export type StoryEntry = { text: string, user: string, turn?: number };
 
@@ -35,27 +33,26 @@ const GameContext = createContext<GameContextProps | null>(null);
 
 type GameProps = { children?: ReactNode };
 
-export const GameProvider: React.FC<GameProps> = ({children}) => {
+export const GameProvider: React.FC<GameProps> = ({ children }) => {
     const [isTriggered, setIsTriggered] = useState(false);
-    const location = useLocation();
-    const [story, setStory] = useState<Story>({entries: [], opener: ''});
+
+    const [story, setStory] = useState<Story>({ entries: [], opener: '' });
     const [content, setContent] = useState('');
     const addEntry = useCallback((storyEntry: StoryEntry) => {
-        setStory({...story, entries: [...story.entries, storyEntry]});
+        setStory({ ...story, entries: [...story.entries, storyEntry] });
     }, [story]);
-    const getPlayers = useCallback((pathName: string) => pathName === '/quickplay' ? quickPlayPlayers : []
-        , []);
+
     const addOpener = useCallback((opener: string) => {
-        setStory({...story, opener});
+        setStory({ ...story, opener });
     }, [story]);
     const [config, setConfig] = useState<GameConfig>({
         openerCategory: 'random',
-        players: getPlayers(location.pathname)
+        players: []
     });
 
     useEffect(() => {
-        setContent(`${story.opener} ${story.entries.reduce<string>((acc: string, currentValue: StoryEntry) =>
-            acc.concat(' '+ currentValue.text), '')}`);
+        setContent(`${ story.opener } ${ story.entries.reduce<string>((acc: string, currentValue: StoryEntry) =>
+            acc.concat(' ' + currentValue.text), '') }`);
     }, [story]);
 
     const value = {
@@ -70,8 +67,8 @@ export const GameProvider: React.FC<GameProps> = ({children}) => {
         setConfig
     };
     return (
-        <GameContext.Provider value={value}>
-            {children}
+        <GameContext.Provider value={ value }>
+            { children }
         </GameContext.Provider>
     );
 };

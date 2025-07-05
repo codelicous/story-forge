@@ -7,7 +7,7 @@ export const GameOver = (): React.JSX.Element => {
     const {story} = useGame();
     const mainMenu = useCallback(() => {
         navigate('/');
-    }, []);
+    }, [navigate]);
     return <div className='size-full flex justify-center items-center flex-col'>
         <div className='text-3xl max-w-2xl p-2.5 flex justify-center'>
             {`${story.opener} ${story.entries.reduce<string>((acc: string, currentValue: StoryEntry) =>

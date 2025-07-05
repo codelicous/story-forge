@@ -68,25 +68,6 @@ export const Welcome = (): React.JSX.Element => {
     const isGameValid = useCallback(() => players?.length > 1 && players.every(player => player.name.trim().length > 2), [players]);
     const playerNameValid = useCallback(() => currentPlayerName.length > 2, [currentPlayerName]);
 
-    const onInputKeyDown = useCallback((event: KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter' && playerNameValid()) {
-            addPlayer();
-        }
-    }, [currentPlayerName, playerNameValid]);
-
-    const onPlayClick = useCallback(() => {
-        navigate('/game');
-    }, [navigate]);
-
-    const onQuickPlayClick = useCallback(() => {
-        setConfig((prevState) => ({ ...prevState, players: quickPlayPlayers }));
-        navigate('/quickplay');
-    }, [navigate, setConfig]);
-
-    const testServerClick = useCallback(() => {
-        navigate('/test-server');
-    }, [navigate]);
-
     const addPlayer = useCallback(() => {
         if (currentPlayerName) {
             setConfig((prevState) => ({
@@ -100,6 +81,25 @@ export const Welcome = (): React.JSX.Element => {
             setCurrentPlayerName('');
         }
     }, [setConfig, currentPlayerName]);
+
+    const onInputKeyDown = useCallback((event: KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter' && playerNameValid()) {
+            addPlayer();
+        }
+    }, [addPlayer, playerNameValid]);
+
+    const onPlayClick = useCallback(() => {
+        navigate('/game');
+    }, [navigate]);
+
+    const onQuickPlayClick = useCallback(() => {
+        setConfig((prevState) => ({ ...prevState, players: quickPlayPlayers }));
+        navigate('/quickplay');
+    }, [navigate, setConfig]);
+
+    const testServerClick = useCallback(() => {
+        navigate('/test-server');
+    }, [navigate]);
 
     const removePlayer = useCallback((playerId: number) => {
         setConfig((prevState) => ({

@@ -1,26 +1,5 @@
 import React, { createContext, useContext, useCallback, useEffect, useRef, useState, ReactNode } from 'react';
-import { GameState } from '@components/app/consts.ts';
-import { StoryEntry } from '@contexts/game.context.tsx';
-
-const gameStub: any = {
-    activePlayerId: null,
-    content: '',
-    currentPlayerTime: 0,
-    id: '',
-    maxEntries: 0,
-    name: '',
-    nextPlayer: null,
-    max_turn_seconds: 30,
-    story: {
-        entries: [],
-        opener: ''
-    },
-    openerCategory: 'random',
-    players: [1, 2, 3, 4],
-    starter: 'There was a special sale on Costco\'s saver meaty buns, yet Sherrill didn\'t',
-    state: GameState.Create,
-    totalTurns: 1
-};
+import { StoryEntry, useGame } from '@contexts/game.context.tsx';
 
 interface WebSocketContextType {
     isConnected: boolean;
@@ -50,6 +29,8 @@ interface WebSocketProviderProps {
 
 export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }) => {
     const [wsContent, setWsContent] = useState('');
+    const { config } = useGame();
+
     const [isConnected, setIsConnected] = useState(false);
     const socketRef = useRef<WebSocket | null>(null);
     const socketIdRef = useRef<string>('');
@@ -58,10 +39,10 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
     const initializeGame = useCallback(() => {
         socketRef.current?.send(JSON.stringify({
             message: 'initialize_game_session',
-            payload: gameStub,
+            payload: config,
             socketId: socketIdRef.current,
         }));
-    }, []);
+    }, [config]);
 
     const handleOpen = useCallback(() => {
         setWsContent('connection established');
@@ -76,6 +57,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
         } catch (err) {
             console.warn('invalid socket connection', err);
         }
+        // socketId is sent only in the first payload to message listener
         if (data && 'socketId' in data) {
             socketIdRef.current = data.socketId;
             console.info('initializing game', data);
@@ -105,7 +87,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
         socketRefCurrentInstance.removeEventListener('error', handleError);
     }, [handleOpen, handleMessage, handleClose, handleError]);
 
-    const initializeConnectionAndListeners = useCallback(() => {
+    const initializeConnectionAndListeners = useCallback( () => {
         socketRef.current = new WebSocket('ws://localhost:8000/game/live');
         socketRef.current.addEventListener('open', handleOpen);
         socketRef.current.addEventListener('message', handleMessage);

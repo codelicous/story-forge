@@ -11,17 +11,17 @@ declare global {
     export interface Game {
         name?: string;
         id?: string;
-        content: string;
+        content?: string;
         openerCategory: 'random'| 'mystery' |'funny';
         starter?: string;
-        state: GameState;
+        state?: GameState;
         players: Player[];
-        activePlayer?: Player| null;
-        nextPlayer: Player| null;
-        currentPlayerTime: number
-        totalTurns: number;
-        maxEntries: number;
-        story: Story;
+        activePlayer: Player | null;
+        nextPlayer?: Player| null;
+        currentPlayerTime?: number
+        totalTurns?: number;
+        maxEntries?: number;
+        story?: Story;
     }
     export interface ChildProps {
         className?: string;
