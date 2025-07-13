@@ -3,7 +3,10 @@ import { StoryEntry, useGame } from '@contexts/game.context.tsx';
 
 interface WebSocketContextType {
     isConnected: boolean;
-    wsContent: string;
+    connectionError: boolean;
+    connectionTested: boolean;
+    isTurnLoading: boolean;
+    wsContent: Game | null;
     openWebSocket: () => void;
     closeWebSocket: () => void;
     sendMessage: (message: string) => void;
@@ -11,7 +14,22 @@ interface WebSocketContextType {
     passTurn: () => void;
     addEntry: (text: string, user: string) => void;
     clearLog: () => void;
+    resetError: () => void;
+    testConnection: () => void;
+    disconnectAndCleanup: () => void;
 }
+
+// Type guard to validate Game object
+const isValidGame = (data: unknown): data is Game => {
+    return data !== null && 
+           typeof data === 'object' &&
+           data !== undefined &&
+           'players' in data &&
+           'openerCategory' in data &&
+           Array.isArray((data as Record<string, unknown>).players) &&
+           typeof (data as Record<string, unknown>).openerCategory === 'string' &&
+           ['random', 'mystery', 'funny'].includes((data as Record<string, unknown>).openerCategory as string);
+};
 
 const WebSocketContext = createContext<WebSocketContextType | undefined>(undefined);
 
@@ -28,10 +46,13 @@ interface WebSocketProviderProps {
 }
 
 export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }) => {
-    const [wsContent, setWsContent] = useState('');
+    const [wsContent, setWsContent] = useState<Game | null>(null);
     const { config } = useGame();
 
     const [isConnected, setIsConnected] = useState(false);
+    const [connectionError, setConnectionError] = useState(false);
+    const [connectionTested, setConnectionTested] = useState(false);
+    const [isTurnLoading, setIsTurnLoading] = useState(false);
     const socketRef = useRef<WebSocket | null>(null);
     const socketIdRef = useRef<string>('');
     const sessionIdRef = useRef<string>('');
@@ -45,8 +66,8 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
     }, [config]);
 
     const handleOpen = useCallback(() => {
-        setWsContent('connection established');
         setIsConnected(true);
+        setConnectionError(false);
     }, []);
 
     const handleMessage = useCallback((event: MessageEvent) => {
@@ -59,25 +80,37 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
         }
         // socketId is sent only in the first payload to message listener
         if (data && 'socketId' in data) {
+
             socketIdRef.current = data.socketId;
-            console.info('initializing game', data);
             initializeGame();
+            return; // Don't set wsContent for socketId messages
         }
         if (!sessionIdRef.current && data && ('id' in data)) {
             sessionIdRef.current = data.id;
         }
-        setWsContent(messageData);
+        
+        // Only set wsContent if data is a valid Game object
+        if (isValidGame(data)) {
+            setWsContent(data);
+            // Turn loading completes when we receive new game data
+            setIsTurnLoading(false);
+        } else {
+            console.warn('Received invalid game data:', data);
+        }
     }, [initializeGame]);
 
     const handleClose = useCallback((event: CloseEvent) => {
         console.log('WebSocket closed:', event.code, event.reason);
         setIsConnected(false);
-        setWsContent(`Connection closed: ${event.code} - ${event.reason || 'No reason provided'}`);
+        if (event.code !== 1000) {
+            setConnectionError(true);
+        }
     }, []);
 
     const handleError = useCallback((error: Event) => {
         console.error('WebSocket error:', error);
-        setWsContent('Connection error occurred');
+        setConnectionError(true);
+        setIsConnected(false);
     }, []);
 
     const removeSocketListeners = useCallback((socketRefCurrentInstance: WebSocket) => {
@@ -124,6 +157,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
     }), []);
 
     const passTurn = useCallback(() => {
+        setIsTurnLoading(true);
         socketRef.current?.send(JSON.stringify({
             socketId: socketIdRef.current,
             message: 'end_current_turn',
@@ -132,13 +166,67 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
     }, []);
 
     const addEntry = useCallback((text: string, user: string) => {
+        setIsTurnLoading(true);
         const entry: StoryEntry = { text, user };
         socketRef.current?.send(socketPayload({ message: 'add_entry', entry }));
     }, [socketPayload]);
 
     const clearLog = useCallback(() => {
-        setWsContent('');
+        setWsContent(null);
     }, []);
+
+    const resetError = useCallback(() => {
+        setConnectionError(false);
+    }, []);
+
+    const testConnection = useCallback(() => {
+        // Create a temporary connection just to test connectivity
+        const testSocket = new WebSocket('ws://localhost:8000/game/live');
+        
+        testSocket.addEventListener('open', () => {
+            setIsConnected(true);
+            setConnectionError(false);
+            setConnectionTested(true);
+            testSocket.close(1000, 'Connection test complete');
+        });
+        
+        testSocket.addEventListener('error', () => {
+            setConnectionError(true);
+            setIsConnected(false);
+            setConnectionTested(true);
+        });
+        
+        testSocket.addEventListener('close', (event) => {
+            if (event.code !== 1000) {
+                setConnectionError(true);
+                setIsConnected(false);
+            }
+            setConnectionTested(true);
+        });
+    }, []);
+
+    const disconnectAndCleanup = useCallback(() => {
+        // Close WebSocket connection if it exists
+        if (socketRef.current) {
+            removeSocketListeners(socketRef.current);
+            if (socketRef.current.readyState === WebSocket.OPEN ||
+                socketRef.current.readyState === WebSocket.CONNECTING) {
+                socketRef.current.close(1000, 'Game ended');
+            }
+            socketRef.current = null;
+        }
+        
+        // Reset all WebSocket state
+        setWsContent(null);
+        setIsConnected(false);
+        setConnectionError(false);
+        setConnectionTested(false);
+        setIsTurnLoading(false);
+        
+        // Clear session data
+        socketIdRef.current = '';
+        sessionIdRef.current = '';
+    }, [removeSocketListeners]);
 
     // Cleanup on unmount
     useEffect(() => {
@@ -158,6 +246,9 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
 
     const value: WebSocketContextType = {
         isConnected,
+        connectionError,
+        connectionTested,
+        isTurnLoading,
         wsContent,
         openWebSocket,
         closeWebSocket,
@@ -165,7 +256,10 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
         initializeGame,
         passTurn,
         addEntry,
-        clearLog
+        clearLog,
+        resetError,
+        testConnection,
+        disconnectAndCleanup
     };
 
     return (

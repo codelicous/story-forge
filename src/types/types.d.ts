@@ -16,12 +16,19 @@ declare global {
         starter?: string;
         state?: GameState;
         players: Player[];
-        activePlayer: Player | null;
-        nextPlayer?: Player| null;
+        activePlayerId: Player | null;
         currentPlayerTime?: number
         totalTurns?: number;
         maxEntries?: number;
         story?: Story;
+    }
+
+    export interface ParsedGame extends Game {
+        activePlayer: Player;
+        nextPlayer: Player;
+        currentPlayerTime: number;
+        totalTurns: number;
+        maxEntries: number;
     }
     export interface ChildProps {
         className?: string;

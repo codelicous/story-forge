@@ -3,5 +3,19 @@
 }
 
 .progress-bar {
-    transition: width 100ms ease-in-out;
+    transition: width 500ms ease-in-out;
+}
+
+.progress-bar-animated {
+    animation: countdown 50s linear forwards;
+    width: 100%;
+}
+
+@keyframes countdown {
+    from {
+        width: 100%;
+    }
+    to {
+        width: 0;
+    }
 }
