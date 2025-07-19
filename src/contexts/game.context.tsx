@@ -26,7 +26,8 @@ type GameContextProps = {
     setStory: (story: Story) => void;
     addEntry: (storyEntry: StoryEntry) => void;
     addOpener: (opener: string) => void;
-    content: string
+    content: string;
+    resetGame: () => void;
 }
 
 const GameContext = createContext<GameContextProps | null>(null);
@@ -45,6 +46,14 @@ export const GameProvider: React.FC<GameProps> = ({ children }) => {
     const addOpener = useCallback((opener: string) => {
         setStory({ ...story, opener });
     }, [story]);
+    
+    const resetGame = useCallback(() => {
+        setStory(() => ({ entries: [], opener: '' }));
+        setConfig(() => ({ openerCategory: 'random', players: [] }));
+        setIsTriggered(() => false);
+        setContent(() => '');
+    }, []);
+    
     const [config, setConfig] = useState<GameConfig>({
         openerCategory: 'random',
         players: []
@@ -64,7 +73,8 @@ export const GameProvider: React.FC<GameProps> = ({ children }) => {
         config,
         setStory,
         setIsTriggered,
-        setConfig
+        setConfig,
+        resetGame
     };
     return (
         <GameContext.Provider value={ value }>

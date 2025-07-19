@@ -4,10 +4,11 @@ import { useNavigate } from 'react-router-dom';
 
 export const GameOver = (): React.JSX.Element => {
     const navigate = useNavigate();
-    const {story} = useGame();
+    const {story, resetGame} = useGame();
     const mainMenu = useCallback(() => {
+        resetGame();
         navigate('/');
-    }, [navigate]);
+    }, [resetGame, navigate]);
     return <div className='size-full flex justify-center items-center flex-col'>
         <div className='text-3xl max-w-2xl p-2.5 flex justify-center'>
             {`${story.opener} ${story.entries.reduce<string>((acc: string, currentValue: StoryEntry) =>
