@@ -11,7 +11,7 @@ function GameBoard({ className }: ChildProps): React.JSX.Element {
 
     const navigate = useNavigate();
     const { openWebSocket, wsContent, connectionError, passTurn, testConnection, connectionTested, isTurnLoading, disconnectAndCleanup } = useWebSocket();
-    const { resetGame } = useGame();
+    const { resetGame, config } = useGame();
 
     const isGameDataComplete = (game: Game): boolean => {
         return game.currentPlayerTime !== undefined &&
@@ -130,7 +130,7 @@ function GameBoard({ className }: ChildProps): React.JSX.Element {
             <StartGameDialog
                 triggerStartGame={ okDialogAction }
                 isOpen={ showGameDialog && connectionTested && !connectionError }
-                startingPlayerName={ parsedGame?.activePlayer?.name || '' }/>
+                startingPlayerName={ config.players[0]?.name || '' }/>
         </div>
     );
 }
