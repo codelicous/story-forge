@@ -3,6 +3,7 @@ import {useGame} from '@contexts/game.context.tsx';
 import openings from '@assets/openings.json';
 import classNames from 'classnames';
 import {MAX_WORDS, MIN_WORDS} from '@components/app/consts.ts';
+import { useWebSocket } from '@contexts/websocket.context.tsx';
 
 export type StoryBoardProps = ChildProps &
     {
@@ -17,6 +18,7 @@ export default function StoryBoard({className, updatePlayerTurn, game, isTurnLoa
     const [inputDisabled, setInputDisabled] = useState<boolean>(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const {addEntry, addOpener, content, story} = useGame();
+    const { addSocketEntry } = useWebSocket();
     const [wordCounter, setWordCounter] = useState(0);
     const [textValidationAlert, setTextValidationAlert] = useState<string>('');
     const validationText = `Please insert a sentence between ${MIN_WORDS} and ${MAX_WORDS} words`;
@@ -51,9 +53,9 @@ export default function StoryBoard({className, updatePlayerTurn, game, isTurnLoa
         addEntry({
             turn: game.totalTurns, user: game.activePlayer?.name || '', text: activeText.trim()
         });
+        addSocketEntry(activeText.trim(), game.activePlayer.name)
         inputRef?.current?.focus();
         setActiveText('');
-        updatePlayerTurn();
 
     }, [activeText, addEntry, game.activePlayer?.name, game.totalTurns, inputDisabled, isTurnLoading, updatePlayerTurn, validationText, wordCounter]);
 

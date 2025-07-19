@@ -12,7 +12,7 @@ interface WebSocketContextType {
     sendMessage: (message: string) => void;
     initializeGame: () => void;
     passTurn: () => void;
-    addEntry: (text: string, user: string) => void;
+    addSocketEntry: (text: string, user: string) => void;
     clearLog: () => void;
     resetError: () => void;
     testConnection: () => void;
@@ -165,7 +165,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
         }));
     }, []);
 
-    const addEntry = useCallback((text: string, user: string) => {
+    const addSocketEntry = useCallback((text: string, user: string) => {
         setIsTurnLoading(true);
         const entry: StoryEntry = { text, user };
         socketRef.current?.send(socketPayload({ message: 'add_entry', entry }));
@@ -255,7 +255,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
         sendMessage,
         initializeGame,
         passTurn,
-        addEntry,
+        addSocketEntry,
         clearLog,
         resetError,
         testConnection,
