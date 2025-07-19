@@ -16,7 +16,7 @@ declare global {
         starter?: string;
         state?: GameState;
         players: Player[];
-        activePlayerId: Player | null;
+        activePlayer: Player | null;
         currentPlayerTime?: number
         totalTurns?: number;
         maxEntries?: number;

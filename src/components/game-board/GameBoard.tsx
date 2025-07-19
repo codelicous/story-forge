@@ -17,20 +17,20 @@ function GameBoard({ className }: ChildProps): React.JSX.Element {
         return game.currentPlayerTime !== undefined &&
             game.maxEntries !== undefined &&
             game.totalTurns !== undefined &&
-            game.activePlayerId !== null &&
+            game.activePlayer !== null &&
             game.players.length > 0;
     };
 
     const parseGameData = (game: Game): ParsedGame | null => {
-        if (!isGameDataComplete(game) || !game.activePlayerId) return null;
-        const activePlayerIndex = game.players.findIndex(p => p.id === game.activePlayerId?.id);
+        if (!isGameDataComplete(game) || !game.activePlayer) return null;
+        const activePlayerIndex = game.players.findIndex(p => p.id === game.activePlayer?.id);
         if (activePlayerIndex === -1) return null;
 
         const nextPlayerIndex = (activePlayerIndex + 1) % game.players.length;
 
         return {
             ...game,
-            activePlayer: game.activePlayerId,
+            activePlayer: game.activePlayer,
             nextPlayer: game.players[nextPlayerIndex],
             currentPlayerTime: game.currentPlayerTime!,
             totalTurns: game.totalTurns!,
