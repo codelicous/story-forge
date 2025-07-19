@@ -97,9 +97,6 @@ export const Welcome = (): React.JSX.Element => {
         navigate('/quickplay');
     }, [navigate, setConfig]);
 
-    const testServerClick = useCallback(() => {
-        navigate('/test-server');
-    }, [navigate]);
 
     const removePlayer = useCallback((playerId: number) => {
         setConfig((prevState) => ({
@@ -121,9 +118,9 @@ export const Welcome = (): React.JSX.Element => {
     }, [getNextPlayerColor]);
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 py-6 md:py-12 px-4">
+        <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 py-6 md:py-12 px-4 overflow-x-hidden">
             <div
-                className="max-w-lg md:max-w-3xl lg:max-w-4xl xl:max-w-5xl mx-auto bg-gray-800 rounded-xl shadow-2xl overflow-hidden p-6 md:p-10 lg:p-12">
+                className="max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto bg-gray-800 rounded-xl shadow-2xl p-6 md:p-8 lg:p-10">
                 <div className="flex justify-center mb-6 md:mb-8">
                     <img src='src/assets/story_forge.png' alt='StoryForge Logo'
                          className="h-24 md:h-32 animate-pulse-slow"/>
@@ -273,11 +270,6 @@ export const Welcome = (): React.JSX.Element => {
                         Quick Play (2 Players)
                     </button>
 
-                    <button
-                        className="w-full py-2 rounded-lg font-medium bg-amber-700/50 hover:bg-amber-600/50 text-amber-200 border border-amber-500/30 hover:border-amber-500/50 transition-all"
-                        onClick={ testServerClick }>
-                        Test Server
-                    </button>
                 </div>
 
                 {/* Quote */ }
