@@ -48,7 +48,6 @@ interface WebSocketProviderProps {
 export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }) => {
     const [wsContent, setWsContent] = useState<Game | null>(null);
     const { config } = useGame();
-
     const [isConnected, setIsConnected] = useState(false);
     const [connectionError, setConnectionError] = useState(false);
     const [connectionTested, setConnectionTested] = useState(false);
@@ -88,7 +87,6 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
         if (!sessionIdRef.current && data && ('id' in data)) {
             sessionIdRef.current = data.id;
         }
-        
         // Only set wsContent if data is a valid Game object
         if (isValidGame(data)) {
             setWsContent(data);

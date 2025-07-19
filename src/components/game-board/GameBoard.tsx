@@ -5,13 +5,13 @@ import StoryBoard from './story-board/StoryBoard';
 import { StartGameDialog } from '@components/app/game-board/start-game-dialog/StartGameDialog';
 
 import { useWebSocket } from '@contexts/websocket.context.tsx';
-import { useGame } from '@contexts/game.context.tsx';
+import { StoryEntry, useGame } from '@contexts/game.context.tsx';
 
 function GameBoard({ className }: ChildProps): React.JSX.Element {
 
     const navigate = useNavigate();
     const { openWebSocket, wsContent, connectionError, passTurn, testConnection, connectionTested, isTurnLoading, disconnectAndCleanup } = useWebSocket();
-    const { resetGame, config } = useGame();
+    const { resetGame, config, setContent, content, story } = useGame();
 
     const isGameDataComplete = (game: Game): boolean => {
         return game.currentPlayerTime !== undefined &&
@@ -22,9 +22,16 @@ function GameBoard({ className }: ChildProps): React.JSX.Element {
     };
 
     const parseGameData = (game: Game): ParsedGame | null => {
+
         if (!isGameDataComplete(game) || !game.activePlayer) return null;
         const activePlayerIndex = game.players.findIndex(p => p.id === game.activePlayer?.id);
         if (activePlayerIndex === -1) return null;
+
+        // update of story content if changed
+        if(story.entries.length !== game.story?.entries?.length || !content) {
+            setContent(`${ game.story?.opener || '' } ${ game.story?.entries?.reduce<string>((acc: string, currentValue: StoryEntry) =>
+                acc.concat(' ' + currentValue.text), '') || '' }`);
+        }
 
         const nextPlayerIndex = (activePlayerIndex + 1) % game.players.length;
 

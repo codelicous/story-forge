@@ -1,7 +1,6 @@
 import React, {
     createContext,
     useCallback,
-    useEffect,
     Dispatch,
     ReactNode,
     SetStateAction,
@@ -26,6 +25,7 @@ type GameContextProps = {
     setStory: (story: Story) => void;
     addEntry: (storyEntry: StoryEntry) => void;
     addOpener: (opener: string) => void;
+    setContent: Dispatch<SetStateAction<string>>;
     content: string;
     resetGame: () => void;
 }
@@ -59,11 +59,6 @@ export const GameProvider: React.FC<GameProps> = ({ children }) => {
         players: []
     });
 
-    useEffect(() => {
-        setContent(`${ story.opener } ${ story.entries.reduce<string>((acc: string, currentValue: StoryEntry) =>
-            acc.concat(' ' + currentValue.text), '') }`);
-    }, [story]);
-
     const value = {
         isTriggered,
         story,
@@ -71,6 +66,7 @@ export const GameProvider: React.FC<GameProps> = ({ children }) => {
         addOpener,
         content,
         config,
+        setContent,
         setStory,
         setIsTriggered,
         setConfig,
