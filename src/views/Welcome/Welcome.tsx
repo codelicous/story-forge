@@ -193,25 +193,29 @@ export const Welcome = (): React.JSX.Element => {
                         ) }
                     </h2>
 
-                    <div className="flex mb-4">
+                    <div className="flex gap-3 mb-4">
                         <input
                             onKeyDown={ e => onInputKeyDown(e) }
                             onFocus={ () => setIsInputFocused(true) }
                             onBlur={ () => setIsInputFocused(false) }
                             value={ currentPlayerName }
                             onChange={ event => setCurrentPlayerName(event.target.value) }
-                            className={ `flex-grow bg-gray-700 border-2 border-amber-500/50 focus:border-amber-500 text-${ getNextPlayerColor() } rounded-l-lg px-4 py-2.5 ${ isInputFocused ? `placeholder-${ getNextPlayerColor() }/70` : 'placeholder-amber-400/70' } outline-none transition-all` }
+                            className={ `flex-grow bg-gray-700 border-2 border-amber-500/50 focus:border-amber-500 text-${ getNextPlayerColor() } rounded-lg px-4 py-2.5 ${ isInputFocused ? `placeholder-${ getNextPlayerColor() }/70` : 'placeholder-amber-400/70' } outline-none transition-all` }
                             placeholder="Enter player name..."
                             type="text"
                             maxLength={ 20 }
                         />
                         <button
                             disabled={ !playerNameValid() || players.length >= MAX_PLAYERS }
-                            className={ `px-4 py-2.5 rounded-r-lg font-bold transition-all ${
+                            className={ `px-4 py-2.5 rounded-lg font-bold transition-all ${
                                 playerNameValid() && players.length < MAX_PLAYERS
-                                    ? 'bg-amber-600 hover:bg-amber-500 text-gray-900'
-                                    : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                                    ? 'bg-amber-600 hover:bg-amber-500 text-gray-900 border-0'
+                                    : 'bg-gray-600 text-gray-400 cursor-not-allowed border-0'
                             }` }
+                            style={ playerNameValid() && players.length < MAX_PLAYERS
+                                ? { backgroundColor: '#d97706' }
+                                : { backgroundColor: '#4b5563' }
+                            }
                             onClick={ addPlayer }
                         >
                             Add
