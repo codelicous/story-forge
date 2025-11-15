@@ -97,6 +97,10 @@ export const Welcome = (): React.JSX.Element => {
         navigate('/quickplay');
     }, [navigate, setConfig]);
 
+    const onOpenRoomClick = useCallback(() => {
+        navigate('/lobby-room');
+    }, [navigate]);
+
 
     const removePlayer = useCallback((playerId: number) => {
         setConfig((prevState) => ({
@@ -264,14 +268,21 @@ export const Welcome = (): React.JSX.Element => {
                         }` }
                         onClick={ onPlayClick }
                     >
-                        { isGameValid() ? 'Begin Adventure' : 'Need at least 2 players' }
+                        { isGameValid() ? 'Local Game' : 'Need at least 2 players' }
                     </button>
 
                     <button
                         className="w-full py-3 rounded-lg font-bold text-lg bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-gray-900 shadow-lg hover:shadow-amber-500/25 transition-all"
                         onClick={ onQuickPlayClick }
                     >
-                        Quick Play (2 Players)
+                        Quick Local Play (2 Players)
+                    </button>
+
+                    <button
+                        className="w-full py-3 rounded-lg font-bold text-lg bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-gray-900 shadow-lg hover:shadow-amber-500/25 transition-all"
+                        onClick={ onOpenRoomClick }
+                    >
+                        Open a new Room
                     </button>
 
                 </div>
