@@ -11,6 +11,7 @@ export const LobbyRoom = (): React.JSX.Element => {
     const [numberOfPlayers, setNumberOfPlayers] = useState<number | ''>('');
     const [playerName, setPlayerName] = useState<string>('');
     const [selectedCategory, setSelectedCategory] = useState<string>('random');
+    const [playersJoined, setPlayersJoined] = useState<string[]>([]);
 
     const isNumberOfPlayersValid = useCallback(() => {
         return numberOfPlayers !== '' && numberOfPlayers >= MIN_PLAYERS && numberOfPlayers <= MAX_PLAYERS;
@@ -44,19 +45,42 @@ export const LobbyRoom = (): React.JSX.Element => {
         <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 py-6 md:py-12 px-4">
             <div className="max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto bg-gray-800 rounded-xl shadow-2xl p-6 md:p-8 lg:p-10">
                 <h1 className="text-2xl md:text-3xl lg:text-4xl font-medieval text-amber-500 mb-4 text-center">
-                    Lobby Room
+                    {roomStatus === 'offline' ? 'Create Room' : 'Waiting for other players'}
                 </h1>
 
                 <div className="mb-6">
                     <div className="bg-gray-700/50 rounded-lg p-4">
-                        <h2 className="text-lg md:text-xl font-bold text-amber-500 mb-2">
-                            Room status:
-                        </h2>
-                        <div className="flex items-center space-x-3">
-                            <div className={`w-3 h-3 rounded-full ${roomStatus === 'offline' ? 'bg-red-500' : 'bg-amber-500'}`}></div>
-                            <span className={`text-lg font-medium ${roomStatus === 'offline' ? 'text-red-400' : 'text-amber-400'}`}>
-                                {roomStatus}
-                            </span>
+                        <div className="flex justify-between items-start gap-4">
+                            <div className="flex-1">
+                                <h2 className="text-lg md:text-xl font-bold text-amber-500 mb-2">
+                                    Room status:
+                                </h2>
+                                <div className="flex items-center space-x-3">
+                                    <div className={`w-3 h-3 rounded-full ${roomStatus === 'offline' ? 'bg-red-500' : 'bg-amber-500'}`}></div>
+                                    <span className={`text-lg font-medium ${roomStatus === 'offline' ? 'text-red-400' : 'text-amber-400'}`}>
+                                        {roomStatus}
+                                    </span>
+                                </div>
+                            </div>
+                            {roomStatus !== 'offline' && (
+                                <div className="flex-1">
+                                    <h2 className="text-lg md:text-xl font-bold text-amber-500 mb-2">
+                                        Players Joined:
+                                    </h2>
+                                    <div className="space-y-1">
+                                        {playersJoined.length > 0 ? (
+                                            playersJoined.map((player, index) => (
+                                                <div key={index} className="flex items-center space-x-2">
+                                                    <div className="w-2 h-2 rounded-full bg-amber-500"></div>
+                                                    <span className="text-amber-400">{player}</span>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <span className="text-amber-400/70 text-sm italic">No players yet</span>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -118,7 +142,7 @@ export const LobbyRoom = (): React.JSX.Element => {
                         }`}
                         onClick={onCreateRoomClick}
                     >
-                        {isFormValid() ? 'Create Room' : 'Fill in room details to continue'}
+                        {isFormValid() ? 'Create Room' : 'fill in details to create a room'}
                     </button>
                 </div>
             </div>
