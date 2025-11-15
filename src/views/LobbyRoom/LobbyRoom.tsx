@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from 'react';
+import { CategorySelection } from '@components/CategorySelection/CategorySelection';
 
 type RoomStatus = 'offline' | 'waiting other players';
 
@@ -8,18 +9,24 @@ const MAX_PLAYERS = 5;
 export const LobbyRoom = (): React.JSX.Element => {
     const [roomStatus, setRoomStatus] = useState<RoomStatus>('offline');
     const [numberOfPlayers, setNumberOfPlayers] = useState<number | ''>('');
+    const [playerName, setPlayerName] = useState<string>('');
+    const [selectedCategory, setSelectedCategory] = useState<string>('random');
 
     const isNumberOfPlayersValid = useCallback(() => {
         return numberOfPlayers !== '' && numberOfPlayers >= MIN_PLAYERS && numberOfPlayers <= MAX_PLAYERS;
     }, [numberOfPlayers]);
 
+    const isPlayerNameValid = useCallback(() => {
+        return playerName.trim().length >= 3 && playerName.trim().length <= 20;
+    }, [playerName]);
+
     const isFormValid = useCallback(() => {
-        return isNumberOfPlayersValid();
-    }, [isNumberOfPlayersValid]);
+        return isNumberOfPlayersValid() && isPlayerNameValid() && selectedCategory !== '';
+    }, [isNumberOfPlayersValid, isPlayerNameValid, selectedCategory]);
 
     const onCreateRoomClick = useCallback(() => {
-        console.log('Create Room clicked', { numberOfPlayers });
-    }, [numberOfPlayers]);
+        console.log('Create Room clicked', { numberOfPlayers, playerName: playerName.trim(), category: selectedCategory });
+    }, [numberOfPlayers, playerName, selectedCategory]);
 
     const handleNumberOfPlayersChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
@@ -61,6 +68,25 @@ export const LobbyRoom = (): React.JSX.Element => {
 
                     <div className="mb-4">
                         <label className="block text-amber-400 text-sm font-medium mb-2">
+                            Your Name
+                        </label>
+                        <input
+                            type="text"
+                            value={playerName}
+                            onChange={(e) => setPlayerName(e.target.value)}
+                            maxLength={20}
+                            className="w-full bg-gray-700 border-2 border-amber-500/50 focus:border-amber-500 text-amber-400 rounded-lg px-4 py-2.5 placeholder-amber-400/70 outline-none transition-all"
+                            placeholder="Enter your name (3-20 characters)"
+                        />
+                        {playerName.length > 0 && !isPlayerNameValid() && (
+                            <p className="text-red-400 text-sm mt-1">
+                                Name must be between 3 and 20 characters
+                            </p>
+                        )}
+                    </div>
+
+                    <div className="mb-4">
+                        <label className="block text-amber-400 text-sm font-medium mb-2">
                             Number of Players ({MIN_PLAYERS}-{MAX_PLAYERS})
                         </label>
                         <input
@@ -80,6 +106,8 @@ export const LobbyRoom = (): React.JSX.Element => {
                     </div>
                 </div>
 
+                <CategorySelection selectedCategory={selectedCategory} onChange={setSelectedCategory} />
+
                 <div className="space-y-3">
                     <button
                         disabled={!isFormValid()}
@@ -94,6 +122,15 @@ export const LobbyRoom = (): React.JSX.Element => {
                     </button>
                 </div>
             </div>
+
+            {/* Add a custom style tag for the font */}
+            <style>{`
+                @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
+
+                .font-medieval {
+                    font-family: 'MedievalSharp', cursive;
+                }
+            `}</style>
         </div>
     );
 };
