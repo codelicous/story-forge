@@ -25,9 +25,17 @@ export const LobbyRoom = (): React.JSX.Element => {
         return isNumberOfPlayersValid() && isPlayerNameValid() && selectedCategory !== '';
     }, [isNumberOfPlayersValid, isPlayerNameValid, selectedCategory]);
 
-    const onCreateRoomClick = useCallback(() => {
-        console.log('Create Room clicked', { numberOfPlayers, playerName: playerName.trim(), category: selectedCategory });
-    }, [numberOfPlayers, playerName, selectedCategory]);
+    const onButtonClick = useCallback(() => {
+        if (roomStatus === 'offline') {
+            console.log('Create Room clicked', { numberOfPlayers, playerName: playerName.trim(), category: selectedCategory });
+            setPlayersJoined([playerName.trim()]);
+            setRoomStatus('waiting other players');
+        } else {
+            console.log('Cancel Room clicked');
+            setPlayersJoined([]);
+            setRoomStatus('offline');
+        }
+    }, [roomStatus, numberOfPlayers, playerName, selectedCategory]);
 
     const handleNumberOfPlayersChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
@@ -44,8 +52,15 @@ export const LobbyRoom = (): React.JSX.Element => {
     return (
         <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 py-6 md:py-12 px-4">
             <div className="max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto bg-gray-800 rounded-xl shadow-2xl p-6 md:p-8 lg:p-10">
-                <h1 className="text-2xl md:text-3xl lg:text-4xl font-medieval text-amber-500 mb-4 text-center">
-                    {roomStatus === 'offline' ? 'Create Room' : 'Waiting for other players'}
+                <h1 className="text-2xl md:text-3xl lg:text-4xl font-medieval text-amber-500 mb-4 flex items-center gap-6">
+                    {roomStatus === 'offline' ? (
+                        <span className="w-full text-center">Create Room</span>
+                    ) : (
+                        <>
+                            <div className="medieval-loader mr-2"></div>
+                            Waiting for other players
+                        </>
+                    )}
                 </h1>
 
                 <div className="mb-6">
@@ -72,7 +87,10 @@ export const LobbyRoom = (): React.JSX.Element => {
                                             playersJoined.map((player, index) => (
                                                 <div key={index} className="flex items-center space-x-2">
                                                     <div className="w-2 h-2 rounded-full bg-amber-500"></div>
-                                                    <span className="text-amber-400">{player}</span>
+                                                    <span className="text-amber-400">
+                                                        {player}
+                                                        {player === playerName.trim() && ' (You)'}
+                                                    </span>
                                                 </div>
                                             ))
                                         ) : (
@@ -99,7 +117,8 @@ export const LobbyRoom = (): React.JSX.Element => {
                             value={playerName}
                             onChange={(e) => setPlayerName(e.target.value)}
                             maxLength={20}
-                            className="w-full bg-gray-700 border-2 border-amber-500/50 focus:border-amber-500 text-amber-400 rounded-lg px-4 py-2.5 placeholder-amber-400/70 outline-none transition-all"
+                            disabled={roomStatus !== 'offline'}
+                            className="w-full bg-gray-700 border-2 border-amber-500/50 focus:border-amber-500 text-amber-400 rounded-lg px-4 py-2.5 placeholder-amber-400/70 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                             placeholder="Enter your name (3-20 characters)"
                         />
                         {playerName.length > 0 && !isPlayerNameValid() && (
@@ -119,7 +138,8 @@ export const LobbyRoom = (): React.JSX.Element => {
                             max={MAX_PLAYERS}
                             value={numberOfPlayers}
                             onChange={handleNumberOfPlayersChange}
-                            className="w-full bg-gray-700 border-2 border-amber-500/50 focus:border-amber-500 text-amber-400 rounded-lg px-4 py-2.5 placeholder-amber-400/70 outline-none transition-all"
+                            disabled={roomStatus !== 'offline'}
+                            className="w-full bg-gray-700 border-2 border-amber-500/50 focus:border-amber-500 text-amber-400 rounded-lg px-4 py-2.5 placeholder-amber-400/70 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                             placeholder={`Enter number of players (${MIN_PLAYERS}-${MAX_PLAYERS})`}
                         />
                         {numberOfPlayers !== '' && !isNumberOfPlayersValid() && (
@@ -130,19 +150,23 @@ export const LobbyRoom = (): React.JSX.Element => {
                     </div>
                 </div>
 
-                <CategorySelection selectedCategory={selectedCategory} onChange={setSelectedCategory} />
+                <CategorySelection selectedCategory={selectedCategory} onChange={setSelectedCategory} disabled={roomStatus !== 'offline'} />
 
                 <div className="space-y-3">
                     <button
-                        disabled={!isFormValid()}
+                        disabled={roomStatus === 'offline' && !isFormValid()}
                         className={`w-full py-3 rounded-lg font-bold text-lg transition-all ${
-                            isFormValid()
-                                ? 'bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-gray-900 shadow-lg hover:shadow-amber-500/25'
-                                : 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                            roomStatus === 'offline'
+                                ? isFormValid()
+                                    ? 'bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-gray-900 shadow-lg hover:shadow-amber-500/25'
+                                    : 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                                : 'bg-gradient-to-r from-red-900 to-red-800 hover:from-red-800 hover:to-red-700 text-red-200 shadow-lg hover:shadow-red-900/25'
                         }`}
-                        onClick={onCreateRoomClick}
+                        onClick={onButtonClick}
                     >
-                        {isFormValid() ? 'Create Room' : 'fill in details to create a room'}
+                        {roomStatus === 'offline'
+                            ? (isFormValid() ? 'Create Room' : 'fill in details to create a room')
+                            : 'Cancel Room'}
                     </button>
                 </div>
             </div>
@@ -153,6 +177,33 @@ export const LobbyRoom = (): React.JSX.Element => {
 
                 .font-medieval {
                     font-family: 'MedievalSharp', cursive;
+                }
+
+                .medieval-loader {
+                    width: 32px;
+                    height: 32px;
+                    position: relative;
+                }
+
+                .medieval-loader::before {
+                    content: '';
+                    position: absolute;
+                    width: 32px;
+                    height: 32px;
+                    background: radial-gradient(circle, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+                    border-radius: 50%;
+                    animation: medieval-pulse 2s ease-in-out infinite;
+                }
+
+                @keyframes medieval-pulse {
+                    0%, 100% {
+                        box-shadow: 0 0 5px rgba(245, 158, 11, 0.3);
+                        opacity: 0.6;
+                    }
+                    50% {
+                        box-shadow: 0 0 25px rgba(245, 158, 11, 0.9), 0 0 40px rgba(251, 191, 36, 0.6);
+                        opacity: 1;
+                    }
                 }
             `}</style>
         </div>

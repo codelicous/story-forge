@@ -46,9 +46,10 @@ const categoryIcons: Record<string, React.JSX.Element> = {
 interface CategorySelectionProps {
     selectedCategory: string;
     onChange: (category: string) => void;
+    disabled?: boolean;
 }
 
-export const CategorySelection = ({ selectedCategory, onChange }: CategorySelectionProps): React.JSX.Element => {
+export const CategorySelection = ({ selectedCategory, onChange, disabled = false }: CategorySelectionProps): React.JSX.Element => {
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         onChange(event.target.value);
     };
@@ -64,7 +65,8 @@ export const CategorySelection = ({ selectedCategory, onChange }: CategorySelect
                     <label
                         key={ category }
                         className={ `
-                            flex items-center p-3 rounded-lg cursor-pointer transition-all duration-200
+                            flex items-center p-3 rounded-lg transition-all duration-200
+                            ${ disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer' }
                             ${ selectedCategory === category
                             ? 'bg-amber-600/20 border-2 border-amber-500'
                             : 'bg-gray-700/50 border-2 border-transparent hover:border-amber-500/50' }
@@ -76,6 +78,7 @@ export const CategorySelection = ({ selectedCategory, onChange }: CategorySelect
                             type="radio"
                             name="category"
                             value={ category }
+                            disabled={ disabled }
                             className="radio h-5 w-5 text-amber-500 bg-gray-700 border-amber-500 checked:bg-amber-500 checked:shadow-[0_0_0_4px_#2e2e2e_inset,_0_0_0_4px_#2e2e2e_inset] hidden"
                         />
                         <div className={ `w-5 h-5 rounded-full mr-3 border-2 flex items-center justify-center
