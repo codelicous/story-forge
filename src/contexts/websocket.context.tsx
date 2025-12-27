@@ -7,10 +7,11 @@ interface WebSocketContextType {
     connectionTested: boolean;
     isTurnLoading: boolean;
     wsContent: Game | null;
-    openWebSocket: () => void;
+    openWebSocket: (onConnected?: () => void) => void;
     closeWebSocket: () => void;
     sendMessage: (message: string) => void;
     initializeGame: () => void;
+    sendOpenRoomMessage: (payload?: Partial<Game>) => void;
     passTurn: () => void;
     addSocketEntry: (text: string, user: string) => void;
     clearLog: () => void;
@@ -55,6 +56,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
     const socketRef = useRef<WebSocket | null>(null);
     const socketIdRef = useRef<string>('');
     const sessionIdRef = useRef<string>('');
+    const onConnectedCallbackRef = useRef<(() => void) | null>(null);
 
     const initializeGame = useCallback(() => {
         socketRef.current?.send(JSON.stringify({
@@ -64,32 +66,53 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
         }));
     }, [config]);
 
+    const sendOpenRoomMessage = useCallback((payload?: Partial<Game>) => {
+        console.log('sendOpenRoomMessage', payload);
+        socketRef.current?.send(JSON.stringify({
+            message: 'open_room',
+            payload: payload || config,
+            socketId: socketIdRef.current,
+        }));
+    }, [config]);
     const handleOpen = useCallback(() => {
         setIsConnected(true);
         setConnectionError(false);
+        onConnectedCallbackRef.current?.();
     }, []);
 
     const handleMessage = useCallback((event: MessageEvent) => {
         const messageData = typeof event.data === 'string' ? event.data : event.data.toString();
-        let data;
+        let data: unknown;
         try {
             data = JSON.parse(messageData);
         } catch (err) {
             console.warn('invalid socket connection', err);
+            return;
         }
         // socketId is sent only in the first payload to message listener
-        if (data && 'socketId' in data) {
+        if (data && typeof data === 'object' && 'socketId' in data) {
+            socketIdRef.current = (data as { socketId: string }).socketId;
 
-            socketIdRef.current = data.socketId;
-            initializeGame();
-            return; // Don't set wsContent for socketId messages
+            // Execute callback if provided, otherwise use default behavior
+            if (onConnectedCallbackRef.current) {
+                onConnectedCallbackRef.current();
+                onConnectedCallbackRef.current = null;
+            }
+            return;
         }
-        if (!sessionIdRef.current && data && ('id' in data)) {
-            sessionIdRef.current = data.id;
+        if (!sessionIdRef.current && data && typeof data === 'object' && 'id' in data && typeof (data as { id: unknown }).id === 'string') {
+            sessionIdRef.current = (data as { id: string }).id;
         }
+
+        // Handle both direct Game objects and wrapped messages (e.g. player_joined, room_opened)
+        const gameData = (data && typeof data === 'object' && 'message' in data && 'payload' in data) 
+            ? (data as { payload: unknown }).payload 
+            : data;
+
         // Only set wsContent if data is a valid Game object
-        if (isValidGame(data)) {
-            setWsContent(data);
+        if (isValidGame(gameData)) {
+            setWsContent(gameData);
+
             // Turn loading completes when we receive new game data
             setIsTurnLoading(false);
         } else {
@@ -124,9 +147,10 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
         socketRef.current.addEventListener('message', handleMessage);
         socketRef.current.addEventListener('close', handleClose);
         socketRef.current.addEventListener('error', handleError);
+
     }, [handleOpen, handleMessage, handleClose, handleError]);
 
-    const openWebSocket = useCallback(() => {
+    const openWebSocket = useCallback((onConnected?: () => void) => {
         // Close existing connection if any
         if (socketRef.current) {
             removeSocketListeners(socketRef.current);
@@ -135,6 +159,8 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
                 socketRef.current.close(1000, 'Opening new connection');
             }
         }
+        // Store the callback to be called when connection is established
+        onConnectedCallbackRef.current = onConnected || null;
         initializeConnectionAndListeners();
     }, [initializeConnectionAndListeners, removeSocketListeners]);
 
@@ -252,6 +278,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
         closeWebSocket,
         sendMessage,
         initializeGame,
+        sendOpenRoomMessage,
         passTurn,
         addSocketEntry,
         clearLog,

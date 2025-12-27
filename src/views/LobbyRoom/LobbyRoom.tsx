@@ -1,5 +1,9 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { CategorySelection } from '@components/CategorySelection/CategorySelection';
+import { useWebSocket } from '@contexts/websocket.context';
+import { useGame } from '@contexts/game.context';
+import { GameState, PlayerColorBank } from '@components/app/consts';
 
 type RoomStatus = 'offline' | 'waiting other players';
 
@@ -7,11 +11,23 @@ const MIN_PLAYERS = 2;
 const MAX_PLAYERS = 5;
 
 export const LobbyRoom = (): React.JSX.Element => {
+    const navigate = useNavigate();
+    const { config, setConfig } = useGame();
+    const { openWebSocket, sendOpenRoomMessage, closeWebSocket, wsContent } = useWebSocket();
     const [roomStatus, setRoomStatus] = useState<RoomStatus>('offline');
     const [numberOfPlayers, setNumberOfPlayers] = useState<number | ''>('');
-    const [playerName, setPlayerName] = useState<string>('');
-    const [selectedCategory, setSelectedCategory] = useState<string>('random');
-    const [playersJoined, setPlayersJoined] = useState<string[]>([]);
+    const [playerName, setPlayerName] = useState<string>(config.players[0]?.name || '');
+    const [selectedCategory, setSelectedCategory] = useState<string>(config.openerCategory || 'random');
+
+    const playersJoined = (wsContent?.players && wsContent.players.length > 0)
+        ? wsContent.players.map(p => p.name)
+        : config.players.map(p => p.name);
+
+    useEffect(() => {
+        if (wsContent?.state === GameState.InGame) {
+            navigate('/game');
+        }
+    }, [wsContent?.state, navigate]);
 
     const isNumberOfPlayersValid = useCallback(() => {
         return numberOfPlayers !== '' && numberOfPlayers >= MIN_PLAYERS && numberOfPlayers <= MAX_PLAYERS;
@@ -28,14 +44,36 @@ export const LobbyRoom = (): React.JSX.Element => {
     const onButtonClick = useCallback(() => {
         if (roomStatus === 'offline') {
             console.log('Create Room clicked', { numberOfPlayers, playerName: playerName.trim(), category: selectedCategory });
-            setPlayersJoined([playerName.trim()]);
+
+            // Update game config while preserving existing players if any
+            const updatedPlayers = config.players.length > 0
+                ? config.players.map((p, i) => i === 0 ? { ...p, name: playerName.trim() } : p)
+                : [{ id: 1, name: playerName.trim(), color: PlayerColorBank.player1 }];
+
+            const updatedConfig = {
+                ...config,
+                openerCategory: selectedCategory as Game['openerCategory'],
+                players: updatedPlayers
+            };
+            setConfig(updatedConfig);
+
+            // Open WebSocket connection with callback to send message once connected
+            openWebSocket(() => {
+                console.log('in open websocket callback');
+                sendOpenRoomMessage(updatedConfig);
+            });
+
             setRoomStatus('waiting other players');
         } else {
             console.log('Cancel Room clicked');
-            setPlayersJoined([]);
+
+            // Close WebSocket connection
+            closeWebSocket();
+
+            // Reset local state
             setRoomStatus('offline');
         }
-    }, [roomStatus, numberOfPlayers, playerName, selectedCategory]);
+    }, [roomStatus, numberOfPlayers, playerName, selectedCategory, openWebSocket, sendOpenRoomMessage, closeWebSocket, config, setConfig]);
 
     const handleNumberOfPlayersChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;

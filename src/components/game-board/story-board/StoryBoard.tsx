@@ -50,8 +50,7 @@ export default function StoryBoard({className, updatePlayerTurn, game, isTurnLoa
             return;
         }
 
-
-        addSocketEntry(activeText.trim(), game.activePlayer.name)
+        addSocketEntry(activeText.trim(), game.activePlayer.name);
         inputRef?.current?.focus();
         setActiveText('');
 

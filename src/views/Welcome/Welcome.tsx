@@ -60,7 +60,6 @@ export const Welcome = (): React.JSX.Element => {
         navigate('/lobby-room');
     }, [navigate]);
 
-
     const removePlayer = useCallback((playerId: number) => {
         setConfig((prevState) => ({
             ...prevState,
@@ -85,7 +84,7 @@ export const Welcome = (): React.JSX.Element => {
             <div
                 className="max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto bg-gray-800 rounded-xl shadow-2xl p-6 md:p-8 lg:p-10">
                 <div className="flex justify-center mb-6 md:mb-8">
-                    <img src='src/assets/story_forge.png' alt='StoryForge Logo'
+                    <img src="src/assets/story_forge.png" alt="StoryForge Logo"
                          className="h-24 md:h-32 animate-pulse-slow"/>
                 </div>
 
